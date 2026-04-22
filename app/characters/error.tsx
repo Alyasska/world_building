@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { PageContainer } from '@/components/ui/page-container';
 import { SectionHeader } from '@/components/ui/section-header';
+import { getUiText } from '@/lib/i18n/ui';
+
+const ui = getUiText();
 
 type CharactersErrorProps = {
   error: Error;
@@ -12,16 +15,16 @@ type CharactersErrorProps = {
 export default function CharactersError({ error, reset }: CharactersErrorProps) {
   return (
     <PageContainer narrow>
-      <SectionHeader title="Characters" description="Something went wrong while loading this section." />
+      <SectionHeader title={ui.characters.title} description={ui.characters.errorSectionDescription} />
       <div className="empty-state">
-        <h2 className="empty-state__title">Unable to load characters</h2>
-        <p className="empty-state__description">{error.message || 'Unknown error'}</p>
+        <h2 className="empty-state__title">{ui.characters.loadFailed}</h2>
+        <p className="empty-state__description">{error.message || ui.common.unknownError}</p>
         <div className="actions-row">
           <button type="button" className="button" onClick={reset}>
-            Retry
+            {ui.common.retry}
           </button>
           <Link href="/" className="button-link">
-            Back to dashboard
+            {ui.common.backToDashboard}
           </Link>
         </div>
       </div>

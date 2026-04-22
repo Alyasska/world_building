@@ -29,7 +29,9 @@ These fields apply to most entities unless noted otherwise.
 ## Place
 | field name | type | required/optional | default value | notes |
 | --- | --- | --- | --- | --- |
+| placeScale | enum | required | `other` | Hierarchy level such as `continent`, `region`, `country`, `city`, `village`, or `district`. |
 | placeKind | string | optional | null | City, region, room, landmark, and similar labels. |
+| parentPlaceId | uuid | optional | null | Optional parent place for hierarchy and future drilldown navigation. |
 | locationText | string | optional | null | Free-form location note when geometry is not enough. |
 | aliases | json | optional | `[]` | Alternate place names. |
 

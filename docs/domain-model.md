@@ -4,7 +4,9 @@
 Represents a person or sentient actor in the world. Characters can be linked to factions, stories, events, places, assets, and other characters through explicit relations.
 
 ## Place
-Represents a physical or conceptual location such as a continent, city, district, room, or landmark. Places are the authoritative source for location meaning; map regions only point to them.
+Represents a physical or conceptual location such as a continent, region, country, city, district, room, or landmark. Places are the authoritative source for location meaning; map regions only point to them.
+
+Places also form a parent-child hierarchy. That hierarchy is the backbone for future drilldown navigation such as continent -> region -> country -> city -> village -> district.
 
 ## Story
 Represents an ordered narrative container such as an arc, chapter, quest line, or campaign segment. Stories group entities that matter together without collapsing them into one timeline table.

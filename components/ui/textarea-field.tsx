@@ -1,3 +1,7 @@
+import { getUiText } from '@/lib/i18n/ui';
+
+const ui = getUiText();
+
 type TextareaFieldProps = {
   label: string;
   name: string;
@@ -25,7 +29,7 @@ export function TextareaField({
     <label className="field" htmlFor={name}>
       <span className="field__label">
         {label}
-        {required ? <span className="muted">Required</span> : null}
+        {required ? <span className="muted">{ui.common.required}</span> : null}
       </span>
       <textarea
         id={name}

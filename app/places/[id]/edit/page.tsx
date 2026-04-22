@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getPlace } from '@/server/place-service';
+import { getPlace, listPlaceParentOptions } from '@/server/place-service';
 import { PageContainer } from '@/components/ui/page-container';
 import { SectionHeader } from '@/components/ui/section-header';
 import { PlaceForm } from '@/features/places/place-form';
 import { toTextareaValue } from '@/lib/form';
+import { getUiText } from '@/lib/i18n/ui';
+
+const ui = getUiText();
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -12,7 +15,10 @@ type PageProps = {
 
 export default async function EditPlacePage({ params }: PageProps) {
   const { id } = await params;
-  const place = await getPlace(id);
+  const [place, parentOptions] = await Promise.all([
+    getPlace(id),
+    listPlaceParentOptions(id),
+  ]);
 
   if (!place) {
     notFound();
@@ -21,9 +27,9 @@ export default async function EditPlacePage({ params }: PageProps) {
   return (
     <PageContainer narrow>
       <SectionHeader
-        title={`Edit ${place.name}`}
-        description="Update the place without changing the underlying model."
-        actions={<Link href={`/places/${place.id}`} className="button-link">Back to detail</Link>}
+        title={`${ui.places.editTitlePrefix} ${place.name}`}
+        description={ui.places.editDescription}
+        actions={<Link href={`/places/${place.id}`} className="button-link">{ui.common.backToDetail}</Link>}
       />
       <PlaceForm
         mode="edit"
@@ -36,9 +42,12 @@ export default async function EditPlacePage({ params }: PageProps) {
           content: toTextareaValue(place.content),
           status: place.status,
           canonState: place.canonState,
+          placeScale: place.placeScale,
           placeKind: place.placeKind ?? '',
+          parentPlaceId: place.parentPlaceId ?? '',
           locationText: place.locationText ?? '',
         }}
+        parentOptions={parentOptions}
       />
     </PageContainer>
   );

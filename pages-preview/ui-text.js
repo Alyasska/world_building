@@ -459,14 +459,79 @@ const previewUiText = {
   },
 };
 
-function resolvePreviewText(path) {
-  return String(path ?? "")
-    .split(".")
-    .reduce((current, segment) => (current == null ? undefined : current[segment]), previewUiText);
+const previewWorldOverrides = {
+  ru: {
+    meta: {
+      pageTitle: {
+        dashboard: "Атлас мира | Preview",
+      },
+    },
+    shell: {
+      nav: {
+        dashboard: "Атлас",
+      },
+    },
+    dashboard: {
+      eyebrow: "Map-first preview",
+      title: "Атлас текущего MVP-среза",
+      description: "Временная Pages-поверхность теперь показывает мир прежде всего через Places и их связи, а персонажи остаются вторичным слоем.",
+      focusTitle: "Текущий навигационный фокус",
+      focusDescription: "Сначала проверяется place-first вход в мир, затем уже карточки персонажей, теги, связи и поиск.",
+      reviewCharactersFlow: "Проверить слой персонажей",
+      reviewPlacesFlow: "Проверить place-first поток",
+    },
+  },
+  en: {
+    meta: {
+      pageTitle: {
+        dashboard: "World Atlas | Preview",
+      },
+    },
+    shell: {
+      nav: {
+        dashboard: "Atlas",
+      },
+    },
+    dashboard: {
+      eyebrow: "Map-first preview",
+      title: "Atlas view of the current MVP slice",
+      description: "The temporary Pages surface now frames the world through Places and their structure first, with Characters acting as a secondary layer.",
+      focusTitle: "Current navigation focus",
+      focusDescription: "Review the place-first world entry first, then the character layer, tags, links, and search.",
+      reviewCharactersFlow: "Review character layer",
+      reviewPlacesFlow: "Review place-first flow",
+    },
+  },
+};
+
+function mergePreviewText(base, override) {
+  if (override == null || typeof override !== "object" || Array.isArray(override)) {
+    return override ?? base;
+  }
+
+  const result = { ...base };
+
+  for (const [key, value] of Object.entries(override)) {
+    result[key] =
+      value && typeof value === "object" && !Array.isArray(value)
+        ? mergePreviewText(base?.[key] ?? {}, value)
+        : value;
+  }
+
+  return result;
 }
 
 function getPreviewUiText(locale = "ru") {
-  return previewUiText[locale] ?? previewUiText.ru;
+  const base = previewUiText[locale] ?? previewUiText.ru;
+  const override = previewWorldOverrides[locale] ?? previewWorldOverrides.ru;
+
+  return mergePreviewText(base, override);
+}
+
+function resolvePreviewText(path, locale = "ru") {
+  return String(path ?? "")
+    .split(".")
+    .reduce((current, segment) => (current == null ? undefined : current[segment]), getPreviewUiText(locale));
 }
 
 window.previewUiText = previewUiText;

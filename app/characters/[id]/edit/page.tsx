@@ -5,6 +5,9 @@ import { PageContainer } from '@/components/ui/page-container';
 import { SectionHeader } from '@/components/ui/section-header';
 import { CharacterForm } from '@/features/characters/character-form';
 import { toTextareaValue } from '@/lib/form';
+import { getUiText } from '@/lib/i18n/ui';
+
+const ui = getUiText();
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -21,9 +24,9 @@ export default async function EditCharacterPage({ params }: PageProps) {
   return (
     <PageContainer narrow>
       <SectionHeader
-        title={`Edit ${character.name}`}
-        description="Update the record while keeping the structure simple."
-        actions={<Link href={`/characters/${character.id}`} className="button-link">Back to detail</Link>}
+        title={`${ui.characters.editTitlePrefix} ${character.name}`}
+        description={ui.characters.editDescription}
+        actions={<Link href={`/characters/${character.id}`} className="button-link">{ui.common.backToDetail}</Link>}
       />
       <CharacterForm
         mode="edit"

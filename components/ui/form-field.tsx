@@ -1,3 +1,7 @@
+import { getUiText } from '@/lib/i18n/ui';
+
+const ui = getUiText();
+
 type FormFieldProps = {
   label: string;
   name: string;
@@ -27,7 +31,7 @@ export function FormField({
     <label className="field" htmlFor={name}>
       <span className="field__label">
         {label}
-        {required ? <span className="muted">Required</span> : null}
+        {required ? <span className="muted">{ui.common.required}</span> : null}
       </span>
       <input
         id={name}

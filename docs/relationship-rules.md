@@ -26,13 +26,17 @@
 - Bidirectionality: not required; the event owns the relationship.
 - Typing: participant role is required, such as witness, subject, attacker, speaker, or affected group.
 - Notes: supports multiple participants with ordering or prominence metadata.
+- Canonical path: **Characters attach to Stories through EventParticipant → Event.storyId**. This is the only canonical way to say "a character appears in a story." Do not use StoryEntity for this purpose.
+- participantType is an open field. Currently only 'character' is wired in the service layer. 'faction' and other types will be added incrementally.
 
 ## StoryEntities
-- Purpose: connect stories to the entities that appear in, influence, or anchor them.
+
+- Purpose: connect stories to non-event-based entities — thematic Place anchors, Faction associations, LoreEntry references, or other entities whose presence in a story is not captured by a specific event.
 - Directionality: directional from story to entity.
 - Bidirectionality: not required; the story owns the relationship.
-- Typing: required role such as protagonist, location, faction, event, or reference.
-- Notes: keeps story membership explicit without forcing a story-specific graph model.
+- Typing: required role such as location, faction, lore-reference, or rule-system.
+- **DO NOT use StoryEntity to attach Characters to Stories.** Characters connect to Stories through EventParticipant → Event.storyId — that path preserves the narrative structure (when, where, how the character was involved). StoryEntity is for entities whose story membership is thematic rather than event-driven.
+- Notes: service and API are not yet built. StoryEntity is a reserved scaffold.
 
 ## PlaceConnections
 - Purpose: typed connections between places such as contains, borders, travels-to, connected-by-road, or adjacent-to.
