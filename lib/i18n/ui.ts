@@ -701,6 +701,45 @@ const participantUiText = {
   },
 } as const;
 
+const mapUiText = {
+  ru: {
+    nav: { maps: 'Карты' },
+    maps: {
+      title: 'Карты',
+      pageDescription: 'Визуальные карты мира, привязанные к иерархии мест.',
+      viewerTitle: 'Просмотр карты',
+      emptyTitle: 'Карт пока нет',
+      emptyDescription: 'Карты появятся, когда будут созданы через API или инструменты импорта.',
+      selectRegion: 'Нажмите на регион, чтобы увидеть детали',
+      noRegions: 'На этой карте регионов пока нет.',
+      boundPlace: 'Место',
+      openPlace: 'Открыть карточку',
+      explorePlace: 'Исследовать в атласе',
+      regionList: 'Регионы',
+      unbound: 'Без привязки к месту',
+      coordinateNote: 'Система координат: 0–1000 × 0–1000',
+    },
+  },
+  en: {
+    nav: { maps: 'Maps' },
+    maps: {
+      title: 'Maps',
+      pageDescription: 'Visual map surfaces tied to the place hierarchy.',
+      viewerTitle: 'Map Viewer',
+      emptyTitle: 'No maps yet',
+      emptyDescription: 'Maps will appear once they are created via the API or import tools.',
+      selectRegion: 'Click a region to see details',
+      noRegions: 'No regions on this map yet.',
+      boundPlace: 'Place',
+      openPlace: 'Open record',
+      explorePlace: 'Explore in Atlas',
+      regionList: 'Regions',
+      unbound: 'Not bound to a place',
+      coordinateNote: 'Coordinate space: 0–1000 × 0–1000',
+    },
+  },
+} as const;
+
 export function getUiText(locale: UiLocale = defaultUiLocale) {
   const base = {
     ...uiText[locale],
@@ -713,6 +752,10 @@ export function getUiText(locale: UiLocale = defaultUiLocale) {
 
   const withNarrative = mergeUiText(base, narrativeUiText[locale]);
   const withParticipants = mergeUiText(withNarrative, participantUiText[locale]);
+  const withMap = mergeUiText(withParticipants, mapUiText[locale]);
 
-  return withParticipants as typeof base & (typeof narrativeUiText)[UiLocale] & (typeof participantUiText)[UiLocale];
+  return withMap as typeof base &
+    (typeof narrativeUiText)[UiLocale] &
+    (typeof participantUiText)[UiLocale] &
+    (typeof mapUiText)[UiLocale];
 }

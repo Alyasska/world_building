@@ -8,6 +8,7 @@ const ui = getUiText();
 
 const links = [
   { href: '/world', label: ui.nav.world },
+  { href: '/maps', label: ui.nav.maps },
   { href: '/places', label: ui.nav.places },
   { href: '/stories', label: ui.nav.stories },
   { href: '/events', label: ui.nav.events },
