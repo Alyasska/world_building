@@ -1,0 +1,413 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EntityStatus {
+  draft
+  active
+  archived
+}
+
+enum CanonState {
+  canonical
+  alternate
+  uncertain
+  noncanonical
+}
+
+enum AssetKind {
+  image
+  document
+  audio
+  video
+  archive
+  other
+}
+
+enum MapGeometryType {
+  point
+  rect
+  polygon
+}
+
+model Character {
+  id            String              @id @default(uuid()) @db.Uuid
+  name          String
+  slug          String              @unique
+  summary       String?
+  content       Json?
+  status        EntityStatus        @default(draft)
+  canonState    CanonState          @default(canonical)
+  metadata      Json?
+  aliases       Json?
+  pronouns      String?
+  epithet       String?
+  birthDateText String?
+  deathDateText String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  deletedAt     DateTime?
+
+  fromRelations CharacterRelation[] @relation("CharacterRelationFrom")
+  toRelations   CharacterRelation[] @relation("CharacterRelationTo")
+
+  @@index([slug])
+}
+
+model Place {
+  id           String             @id @default(uuid()) @db.Uuid
+  name         String
+  slug         String             @unique
+  summary      String?
+  content      Json?
+  status       EntityStatus       @default(draft)
+  canonState   CanonState         @default(canonical)
+  metadata     Json?
+  placeKind    String?
+  locationText String?
+  aliases      Json?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  deletedAt    DateTime?
+
+  fromConnections PlaceConnection[] @relation("PlaceConnectionFrom")
+  toConnections   PlaceConnection[] @relation("PlaceConnectionTo")
+
+  @@index([slug])
+}
+
+model Story {
+  id            String          @id @default(uuid()) @db.Uuid
+  title         String
+  slug          String          @unique
+  summary       String?
+  content       Json?
+  status        EntityStatus    @default(draft)
+  canonState    CanonState      @default(canonical)
+  metadata      Json?
+  storyKind     String?
+  startDateText String?
+  endDateText   String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deletedAt     DateTime?
+
+  storyEntities StoryEntity[]
+
+  @@index([slug])
+}
+
+model Event {
+  id            String          @id @default(uuid()) @db.Uuid
+  title         String
+  slug          String          @unique
+  summary       String?
+  content       Json?
+  status        EntityStatus    @default(draft)
+  canonState    CanonState      @default(canonical)
+  metadata      Json?
+  eventDateText String?
+  startAt       DateTime?
+  endAt         DateTime?
+  datePrecision String?         @default("unknown")
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deletedAt     DateTime?
+
+  participants  EventParticipant[]
+
+  @@index([slug])
+}
+
+model Faction {
+  id            String          @id @default(uuid()) @db.Uuid
+  name          String
+  slug          String          @unique
+  summary       String?
+  content       Json?
+  status        EntityStatus    @default(draft)
+  canonState    CanonState      @default(canonical)
+  metadata      Json?
+  factionKind   String?
+  emblemAssetId String?         @db.Uuid
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deletedAt     DateTime?
+
+  @@index([slug])
+}
+
+model LoreEntry {
+  id          String          @id @default(uuid()) @db.Uuid
+  title       String
+  slug        String          @unique
+  summary     String?
+  content     Json?
+  status      EntityStatus    @default(draft)
+  canonState  CanonState      @default(canonical)
+  metadata    Json?
+  entryKind   String?
+  topic       String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?
+
+  @@index([slug])
+}
+
+model RuleSystem {
+  id           String          @id @default(uuid()) @db.Uuid
+  title        String
+  slug         String          @unique
+  summary      String?
+  content      Json?
+  status       EntityStatus    @default(draft)
+  canonState   CanonState      @default(canonical)
+  metadata     Json?
+  systemKind   String?
+  versionLabel String?
+  appliesTo    String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  deletedAt    DateTime?
+
+  @@index([slug])
+}
+
+model Asset {
+  id         String          @id @default(uuid()) @db.Uuid
+  name       String
+  slug       String          @unique
+  summary    String?
+  content    Json?
+  status     EntityStatus    @default(draft)
+  canonState CanonState      @default(canonical)
+  metadata   Json?
+  assetKind  AssetKind       @default(other)
+  storageKey String
+  fileName   String
+  mimeType   String
+  byteSize   BigInt?
+  checksum   String?
+  altText    String?
+  sourceUri  String?
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  deletedAt  DateTime?
+
+  @@index([slug])
+  @@index([storageKey])
+}
+
+model Tag {
+  id         String          @id @default(uuid()) @db.Uuid
+  name       String
+  slug       String          @unique
+  summary    String?
+  content    Json?
+  status     EntityStatus    @default(draft)
+  canonState CanonState      @default(canonical)
+  metadata   Json?
+  color      String?
+  namespace  String          @default("world")
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  deletedAt  DateTime?
+
+  @@index([slug])
+}
+
+model MapRegion {
+  id           String            @id @default(uuid()) @db.Uuid
+  name         String
+  slug         String            @unique
+  summary      String?
+  content      Json?
+  status       EntityStatus      @default(draft)
+  canonState   CanonState        @default(canonical)
+  metadata     Json?
+  mapKey       String            @default("main")
+  layerKey     String            @default("base")
+  geometryType MapGeometryType
+  geometry     Json
+  labelPoint   Json?
+  displayOrder Int               @default(0)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  deletedAt    DateTime?
+
+  @@index([slug])
+  @@index([mapKey, layerKey])
+}
+
+model CharacterRelation {
+  id              String       @id @default(uuid()) @db.Uuid
+  fromCharacterId  String       @db.Uuid
+  toCharacterId    String       @db.Uuid
+  relationType     String
+  status           EntityStatus @default(draft)
+  canonState       CanonState   @default(canonical)
+  metadata         Json?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  deletedAt        DateTime?
+
+  fromCharacter    Character    @relation("CharacterRelationFrom", fields: [fromCharacterId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  toCharacter      Character    @relation("CharacterRelationTo", fields: [toCharacterId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([fromCharacterId])
+  @@index([toCharacterId])
+  @@index([relationType])
+}
+
+model EntityLink {
+  id              String       @id @default(uuid()) @db.Uuid
+  fromEntityType  String
+  fromEntityId    String       @db.Uuid
+  toEntityType    String
+  toEntityId      String       @db.Uuid
+  relationType    String
+  isBidirectional Boolean      @default(false)
+  status          EntityStatus @default(draft)
+  canonState      CanonState   @default(canonical)
+  metadata        Json?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?
+
+  @@index([fromEntityType, fromEntityId])
+  @@index([toEntityType, toEntityId])
+  @@index([relationType])
+}
+
+model EventParticipant {
+  id               String       @id @default(uuid()) @db.Uuid
+  eventId          String       @db.Uuid
+  participantType  String
+  participantId    String       @db.Uuid
+  participantRole  String
+  sequence         Int?
+  note             String?
+  status           EntityStatus @default(draft)
+  canonState       CanonState   @default(canonical)
+  metadata         Json?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  deletedAt        DateTime?
+
+  event            Event        @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([eventId])
+  @@index([participantType, participantId])
+  @@index([participantRole])
+}
+
+model StoryEntity {
+  id           String       @id @default(uuid()) @db.Uuid
+  storyId      String       @db.Uuid
+  entityType   String
+  entityId     String       @db.Uuid
+  entityRole   String
+  sequence     Int?
+  note         String?
+  status       EntityStatus @default(draft)
+  canonState   CanonState   @default(canonical)
+  metadata     Json?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+
+  story        Story        @relation(fields: [storyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([storyId])
+  @@index([entityType, entityId])
+  @@index([entityRole])
+}
+
+model PlaceConnection {
+  id              String       @id @default(uuid()) @db.Uuid
+  fromPlaceId     String       @db.Uuid
+  toPlaceId       String       @db.Uuid
+  connectionType  String
+  isBidirectional Boolean      @default(true)
+  distanceKm      Float?
+  travelTimeText  String?
+  status          EntityStatus @default(draft)
+  canonState      CanonState   @default(canonical)
+  metadata        Json?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?
+
+  fromPlace       Place @relation("PlaceConnectionFrom", fields: [fromPlaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  toPlace         Place @relation("PlaceConnectionTo", fields: [toPlaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([fromPlaceId])
+  @@index([toPlaceId])
+  @@index([connectionType])
+}
+
+model EntityTag {
+  id          String       @id @default(uuid()) @db.Uuid
+  entityType  String
+  entityId    String       @db.Uuid
+  tagId       String       @db.Uuid
+  context     String?
+  status      EntityStatus @default(draft)
+  canonState  CanonState   @default(canonical)
+  metadata    Json?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+
+  tag         Tag          @relation(fields: [tagId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([entityType, entityId])
+  @@index([tagId])
+}
+
+model AssetLink {
+  id          String       @id @default(uuid()) @db.Uuid
+  assetId     String       @db.Uuid
+  entityType  String
+  entityId    String       @db.Uuid
+  usageType   String
+  status      EntityStatus @default(draft)
+  canonState  CanonState   @default(canonical)
+  metadata    Json?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+
+  asset       Asset        @relation(fields: [assetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([assetId])
+  @@index([entityType, entityId])
+  @@index([usageType])
+}
+
+model MapRegionLink {
+  id          String       @id @default(uuid()) @db.Uuid
+  regionId    String       @db.Uuid
+  entityType  String
+  entityId    String       @db.Uuid
+  linkType    String
+  isPrimary   Boolean      @default(false)
+  status      EntityStatus @default(draft)
+  canonState  CanonState   @default(canonical)
+  metadata    Json?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+
+  region      MapRegion    @relation(fields: [regionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([regionId])
+  @@index([entityType, entityId])
+  @@index([linkType])
+}
