@@ -10,21 +10,103 @@
     <div class="shell">
       <aside class="nav-panel">
         <h1>World Building</h1>
-        <p>Static demo preview</p>
+        <p>Phase 1 preview surface</p>
         <nav>
           <a href="./index.html" class="nav-link">Dashboard</a>
           <a href="./characters.html" class="nav-link">Characters</a>
           <a href="./places.html" class="nav-link">Places</a>
         </nav>
+        <section class="nav-note card subtle-card">
+          <h3>Preview mode</h3>
+          <p>UI mock flow only. Actions are in-memory and reset on refresh.</p>
+        </section>
       </aside>
       <main class="content">
-        <section class="card">
-          <h2>Places</h2>
-          <p>Mock data only. No backend calls.</p>
+        <section class="hero card">
+          <div>
+            <p class="eyebrow">Entity slice</p>
+            <h2>Places</h2>
+            <p class="muted">Companion preview layout for list/detail and create/edit workflow parity.</p>
+          </div>
+          <div class="actions-row">
+            <button type="button" class="button" id="place-new-btn">New Place</button>
+            <button type="button" class="button button-secondary" id="place-edit-btn">Edit Selected</button>
+          </div>
         </section>
-        <section class="list" id="places-list"></section>
+
+        <section class="workspace-grid">
+          <article class="card rail-panel">
+            <div class="panel-header">
+              <h3>Records</h3>
+              <span class="muted" id="places-count">0 items</span>
+            </div>
+            <label class="field-label" for="place-search">Quick filter</label>
+            <input id="place-search" class="input" type="search" placeholder="Search name or slug" />
+            <div class="record-list" id="places-list"></div>
+          </article>
+
+          <article class="card">
+            <div class="panel-header">
+              <h3>Detail</h3>
+              <span class="badge" id="place-selected-status">No selection</span>
+            </div>
+            <div id="place-detail" class="detail-stack"></div>
+            <div class="actions-row">
+              <button type="button" class="button button-danger" id="place-delete-btn">Delete Place</button>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="panel-header">
+              <h3 id="place-form-title">Create Place</h3>
+              <span class="muted" id="place-form-mode">Mode: create</span>
+            </div>
+            <form id="place-form" class="form-grid">
+              <label class="field-label" for="place-name">Name</label>
+              <input id="place-name" class="input" name="name" type="text" required />
+
+              <label class="field-label" for="place-slug">Slug (optional)</label>
+              <input id="place-slug" class="input" name="slug" type="text" />
+
+              <label class="field-label" for="place-summary">Summary</label>
+              <textarea id="place-summary" class="input textarea" name="summary" rows="3"></textarea>
+
+              <label class="field-label" for="place-kind">Place kind</label>
+              <input id="place-kind" class="input" name="placeKind" type="text" />
+
+              <label class="field-label" for="place-location">Location notes</label>
+              <input id="place-location" class="input" name="locationText" type="text" />
+
+              <div class="two-col">
+                <div>
+                  <label class="field-label" for="place-status">Status</label>
+                  <select id="place-status" class="input" name="status">
+                    <option value="draft">Draft</option>
+                    <option value="active">Active</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label" for="place-canon">Canon State</label>
+                  <select id="place-canon" class="input" name="canonState">
+                    <option value="canonical">Canonical</option>
+                    <option value="alternate">Alternate</option>
+                    <option value="uncertain">Uncertain</option>
+                    <option value="noncanonical">Noncanonical</option>
+                  </select>
+                </div>
+              </div>
+
+              <p class="form-message" id="place-form-message" role="status" aria-live="polite"></p>
+              <div class="actions-row">
+                <button type="submit" class="button" id="place-save-btn">Save Place</button>
+                <button type="button" class="button-link" id="place-cancel-btn">Reset Form</button>
+              </div>
+            </form>
+          </article>
+        </section>
       </main>
     </div>
     <script src="./mock-app.js"></script>
   </body>
-  </html>
+</html>

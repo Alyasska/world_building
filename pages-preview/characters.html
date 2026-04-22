@@ -10,21 +10,103 @@
     <div class="shell">
       <aside class="nav-panel">
         <h1>World Building</h1>
-        <p>Static demo preview</p>
+        <p>Phase 1 preview surface</p>
         <nav>
           <a href="./index.html" class="nav-link">Dashboard</a>
           <a href="./characters.html" class="nav-link">Characters</a>
           <a href="./places.html" class="nav-link">Places</a>
         </nav>
+        <section class="nav-note card subtle-card">
+          <h3>Preview mode</h3>
+          <p>UI mock flow only. Actions are in-memory and reset on refresh.</p>
+        </section>
       </aside>
       <main class="content">
-        <section class="card">
-          <h2>Characters</h2>
-          <p>Mock data only. No backend calls.</p>
+        <section class="hero card">
+          <div>
+            <p class="eyebrow">Entity slice</p>
+            <h2>Characters</h2>
+            <p class="muted">List, detail, and create/edit layout preview for the first vertical slice.</p>
+          </div>
+          <div class="actions-row">
+            <button type="button" class="button" id="character-new-btn">New Character</button>
+            <button type="button" class="button button-secondary" id="character-edit-btn">Edit Selected</button>
+          </div>
         </section>
-        <section class="list" id="characters-list"></section>
+
+        <section class="workspace-grid">
+          <article class="card rail-panel">
+            <div class="panel-header">
+              <h3>Records</h3>
+              <span class="muted" id="characters-count">0 items</span>
+            </div>
+            <label class="field-label" for="character-search">Quick filter</label>
+            <input id="character-search" class="input" type="search" placeholder="Search name or slug" />
+            <div class="record-list" id="characters-list"></div>
+          </article>
+
+          <article class="card">
+            <div class="panel-header">
+              <h3>Detail</h3>
+              <span class="badge" id="character-selected-status">No selection</span>
+            </div>
+            <div id="character-detail" class="detail-stack"></div>
+            <div class="actions-row">
+              <button type="button" class="button button-danger" id="character-delete-btn">Delete Character</button>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="panel-header">
+              <h3 id="character-form-title">Create Character</h3>
+              <span class="muted" id="character-form-mode">Mode: create</span>
+            </div>
+            <form id="character-form" class="form-grid">
+              <label class="field-label" for="character-name">Name</label>
+              <input id="character-name" class="input" name="name" type="text" required />
+
+              <label class="field-label" for="character-slug">Slug (optional)</label>
+              <input id="character-slug" class="input" name="slug" type="text" />
+
+              <label class="field-label" for="character-summary">Summary</label>
+              <textarea id="character-summary" class="input textarea" name="summary" rows="3"></textarea>
+
+              <label class="field-label" for="character-pronouns">Pronouns (optional)</label>
+              <input id="character-pronouns" class="input" name="pronouns" type="text" />
+
+              <label class="field-label" for="character-epithet">Epithet (optional)</label>
+              <input id="character-epithet" class="input" name="epithet" type="text" />
+
+              <div class="two-col">
+                <div>
+                  <label class="field-label" for="character-status">Status</label>
+                  <select id="character-status" class="input" name="status">
+                    <option value="draft">Draft</option>
+                    <option value="active">Active</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label" for="character-canon">Canon State</label>
+                  <select id="character-canon" class="input" name="canonState">
+                    <option value="canonical">Canonical</option>
+                    <option value="alternate">Alternate</option>
+                    <option value="uncertain">Uncertain</option>
+                    <option value="noncanonical">Noncanonical</option>
+                  </select>
+                </div>
+              </div>
+
+              <p class="form-message" id="character-form-message" role="status" aria-live="polite"></p>
+              <div class="actions-row">
+                <button type="submit" class="button" id="character-save-btn">Save Character</button>
+                <button type="button" class="button-link" id="character-cancel-btn">Reset Form</button>
+              </div>
+            </form>
+          </article>
+        </section>
       </main>
     </div>
     <script src="./mock-app.js"></script>
   </body>
-  </html>
+</html>

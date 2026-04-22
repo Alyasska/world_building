@@ -10,34 +10,63 @@
     <div class="shell">
       <aside class="nav-panel">
         <h1>World Building</h1>
-        <p>Static demo preview</p>
+        <p>Phase 1 preview surface</p>
         <nav>
           <a href="./index.html" class="nav-link">Dashboard</a>
           <a href="./characters.html" class="nav-link">Characters</a>
           <a href="./places.html" class="nav-link">Places</a>
         </nav>
-      </aside>
-      <main class="content">
-        <section class="card">
-          <h2>Temporary Online Preview</h2>
+        <section class="nav-note card subtle-card">
+          <h3>Preview mode</h3>
           <p>
-            This is a mock-data-only demo for GitHub Pages. It intentionally excludes Prisma,
-            API routes, and database logic.
+            Static GitHub Pages UI only. This tracks UX progress and does not call the live
+            Next.js API.
           </p>
         </section>
+      </aside>
+      <main class="content">
+        <section class="hero card">
+          <div>
+            <p class="eyebrow">Phase 1 status</p>
+            <h2>Vertical slice preview board</h2>
+            <p class="muted">
+              Interface-only snapshot for evaluating navigation, list/detail structure, and
+              create/edit form layout before runtime verification.
+            </p>
+          </div>
+          <div class="meta-row">
+            <span class="badge">Preview only</span>
+            <span class="badge">Characters + Places</span>
+            <span class="badge">Internal tool direction</span>
+          </div>
+        </section>
 
-        <section class="grid" id="summary-cards"></section>
+        <section class="stats-grid" id="summary-cards"></section>
+
+        <section class="split-grid">
+          <article class="card">
+            <h3>Recent mock records</h3>
+            <div class="stack" id="recent-records"></div>
+          </article>
+          <article class="card">
+            <h3>Progress checklist</h3>
+            <ul class="checklist" id="progress-checklist"></ul>
+            <div class="actions-row">
+              <a href="./characters.html" class="button-link">Review Characters flow</a>
+              <a href="./places.html" class="button-link">Review Places flow</a>
+            </div>
+          </article>
+        </section>
 
         <section class="card">
-          <h3>What This Preview Covers</h3>
-          <ul>
-            <li>Simple app shell and navigation</li>
-            <li>Characters and Places listing screens</li>
-            <li>Static detail links and mock content</li>
-          </ul>
+          <h3>Preview coverage notes</h3>
+          <p class="muted">
+            Included: shell, navigation, list/detail composition, form patterns, and mock CRUD
+            interactions. Excluded: Prisma, API routes, auth, and persistent storage.
+          </p>
         </section>
       </main>
     </div>
     <script src="./mock-app.js"></script>
   </body>
-  </html>
+</html>
