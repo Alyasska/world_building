@@ -99,6 +99,7 @@ model Place {
   toConnections   PlaceConnection[] @relation("PlaceConnectionTo")
   stories         Story[]
   events          Event[]
+  mapRegions      MapRegion[]
   parentPlace     Place?            @relation("PlaceHierarchy", fields: [parentPlaceId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   childPlaces     Place[]           @relation("PlaceHierarchy")
 
@@ -265,6 +266,26 @@ model Tag {
   @@index([slug])
 }
 
+model Map {
+  id             String      @id @default(uuid()) @db.Uuid
+  name           String
+  slug           String      @unique
+  summary        String?
+  content        Json?
+  status         EntityStatus @default(draft)
+  canonState     CanonState   @default(canonical)
+  metadata       Json?
+  mapKind        String?
+  defaultLayerKey String      @default("base")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+
+  regions        MapRegion[]
+
+  @@index([slug])
+}
+
 model MapRegion {
   id           String            @id @default(uuid()) @db.Uuid
   name         String
@@ -274,7 +295,8 @@ model MapRegion {
   status       EntityStatus      @default(draft)
   canonState   CanonState        @default(canonical)
   metadata     Json?
-  mapKey       String            @default("main")
+  mapId        String            @db.Uuid
+  placeId      String?           @db.Uuid
   layerKey     String            @default("base")
   geometryType MapGeometryType
   geometry     Json
@@ -284,8 +306,14 @@ model MapRegion {
   updatedAt    DateTime          @updatedAt
   deletedAt    DateTime?
 
+  map          Map               @relation(fields: [mapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  place        Place?            @relation(fields: [placeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  links        MapRegionLink[]
+
   @@index([slug])
-  @@index([mapKey, layerKey])
+  @@index([mapId])
+  @@index([placeId])
+  @@index([mapId, layerKey])
 }
 
 model CharacterRelation {

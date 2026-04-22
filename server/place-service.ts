@@ -287,6 +287,12 @@ export async function deletePlace(id: string): Promise<PlaceRecord | null> {
       data: { deletedAt: now, status: 'archived' },
     });
 
+    // Clear place bindings on map regions — regions stay on the map but become unbound.
+    await tx.mapRegion.updateMany({
+      where: { placeId: id, deletedAt: null },
+      data: { placeId: null },
+    });
+
     return tx.place.update({
       where: { id },
       data: { deletedAt: now, status: 'archived' },
