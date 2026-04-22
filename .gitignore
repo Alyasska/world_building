@@ -7,3 +7,4 @@ coverage
 .env.*.local
 prisma/dev.db
 prisma/migrations/**/migration.sql
+!prisma/migrations/**/migration.sql
