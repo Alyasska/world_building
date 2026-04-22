@@ -6,7 +6,7 @@
     <title></title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body data-page="dashboard" data-locale="ru">
+  <body data-page="search" data-locale="ru">
     <div class="shell">
       <aside class="nav-panel">
         <div class="brand-block">
@@ -44,54 +44,32 @@
       <main class="content">
         <section class="hero card">
           <div>
-            <p class="eyebrow" data-ui-text="dashboard.eyebrow"></p>
-            <h2 data-ui-text="dashboard.title"></h2>
-            <p class="muted" data-ui-text="dashboard.description"></p>
-          </div>
-          <div class="meta-row">
-            <span class="badge" data-ui-text="dashboard.previewBadges.0"></span>
-            <span class="badge" data-ui-text="dashboard.previewBadges.1"></span>
-            <span class="badge" data-ui-text="dashboard.previewBadges.2"></span>
+            <p class="eyebrow" data-ui-text="search.eyebrow"></p>
+            <h2 data-ui-text="search.title"></h2>
+            <p class="muted" data-ui-text="search.description"></p>
           </div>
         </section>
 
-        <section class="stats-grid" id="summary-cards"></section>
-
-        <section class="split-grid">
-          <article class="card">
-            <div class="panel-header">
-              <h3 data-ui-text="dashboard.recentTitle"></h3>
-              <a href="./search.html" class="button-link" data-ui-text="dashboard.openSearch"></a>
-            </div>
-            <div class="stack" id="recent-records"></div>
-          </article>
-
-          <article class="card">
-            <h3 data-ui-text="dashboard.progressTitle"></h3>
-            <ul class="checklist" id="progress-checklist"></ul>
-          </article>
+        <section class="card">
+          <form id="search-page-form" class="search-page-form">
+            <input id="search-page-input" class="input" type="search" name="q" data-ui-placeholder="search.placeholder" />
+            <button type="submit" class="button" data-ui-text="search.submit"></button>
+          </form>
+          <p class="muted" id="search-summary"></p>
         </section>
 
-        <section class="split-grid">
+        <section class="search-grid">
           <article class="card">
             <div class="panel-header">
-              <h3 data-ui-text="dashboard.focusTitle"></h3>
-              <span class="badge" data-ui-text="dashboard.focusBadge"></span>
+              <h3 data-ui-text="search.resultsTitle"></h3>
+              <span class="badge" id="search-count">0</span>
             </div>
-            <p class="muted" data-ui-text="dashboard.focusDescription"></p>
-            <div class="actions-row">
-              <a href="./characters.html" class="button-link" data-ui-text="dashboard.reviewCharactersFlow"></a>
-              <a href="./places.html" class="button-link" data-ui-text="dashboard.reviewPlacesFlow"></a>
-            </div>
+            <div class="stack" id="search-results"></div>
           </article>
 
           <article class="card">
-            <div class="panel-header">
-              <h3 data-ui-text="dashboard.coverageTitle"></h3>
-              <span class="badge" data-ui-text="dashboard.coverageBadge"></span>
-            </div>
-            <p class="muted" data-ui-text="dashboard.coverageDescription"></p>
-            <div class="stack" id="dashboard-capabilities"></div>
+            <h3 data-ui-text="search.coverageTitle"></h3>
+            <ul class="checklist" id="search-coverage-list"></ul>
           </article>
         </section>
       </main>

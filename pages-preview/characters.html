@@ -1,112 +1,166 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Characters | World Building Preview</title>
+    <title></title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body data-page="characters">
+  <body data-page="characters" data-locale="ru">
     <div class="shell">
       <aside class="nav-panel">
-        <h1>World Building</h1>
-        <p>Phase 1 preview surface</p>
+        <div class="brand-block">
+          <p class="eyebrow" data-ui-text="shell.brandEyebrow"></p>
+          <h1 data-ui-text="shell.brandTitle"></h1>
+          <p data-ui-text="shell.brandNote"></p>
+        </div>
+
+        <div class="locale-switch">
+          <button type="button" class="locale-button" data-locale-choice="ru">RU</button>
+          <button type="button" class="locale-button" data-locale-choice="en">EN</button>
+        </div>
+
+        <form class="nav-search" id="global-search-form">
+          <label class="field-label" for="global-search-input" data-ui-text="search.quickLabel"></label>
+          <div class="search-inline">
+            <input id="global-search-input" class="input" type="search" name="q" data-ui-placeholder="search.placeholder" />
+            <button type="submit" class="button" data-ui-text="search.submit"></button>
+          </div>
+        </form>
+
         <nav>
-          <a href="./index.html" class="nav-link">Dashboard</a>
-          <a href="./characters.html" class="nav-link">Characters</a>
-          <a href="./places.html" class="nav-link">Places</a>
+          <a href="./index.html" class="nav-link" data-ui-text="shell.nav.dashboard"></a>
+          <a href="./characters.html" class="nav-link" data-ui-text="shell.nav.characters"></a>
+          <a href="./places.html" class="nav-link" data-ui-text="shell.nav.places"></a>
+          <a href="./search.html" class="nav-link" data-ui-text="shell.nav.search"></a>
         </nav>
+
         <section class="nav-note card subtle-card">
-          <h3>Preview mode</h3>
-          <p>UI mock flow only. Actions are in-memory and reset on refresh.</p>
+          <h3 data-ui-text="shell.previewModeTitle"></h3>
+          <p data-ui-text="shell.previewModeDescription"></p>
         </section>
       </aside>
+
       <main class="content">
         <section class="hero card">
           <div>
-            <p class="eyebrow">Entity slice</p>
-            <h2>Characters</h2>
-            <p class="muted">List, detail, and create/edit layout preview for the first vertical slice.</p>
+            <p class="eyebrow" data-ui-text="characters.eyebrow"></p>
+            <h2 data-ui-text="characters.title"></h2>
+            <p class="muted" data-ui-text="characters.description"></p>
           </div>
           <div class="actions-row">
-            <button type="button" class="button" id="character-new-btn">New Character</button>
-            <button type="button" class="button button-secondary" id="character-edit-btn">Edit Selected</button>
+            <button type="button" class="button" id="entity-new-btn" data-ui-text="characters.newButton"></button>
+            <button type="button" class="button button-secondary" id="entity-edit-btn" data-ui-text="characters.editButton"></button>
           </div>
         </section>
 
         <section class="workspace-grid">
           <article class="card rail-panel">
             <div class="panel-header">
-              <h3>Records</h3>
-              <span class="muted" id="characters-count">0 items</span>
+              <h3 data-ui-text="characters.recordsTitle"></h3>
+              <span class="muted" id="entity-count"></span>
             </div>
-            <label class="field-label" for="character-search">Quick filter</label>
-            <input id="character-search" class="input" type="search" placeholder="Search name or slug" />
-            <div class="record-list" id="characters-list"></div>
+            <label class="field-label" for="entity-filter" data-ui-text="common.quickFilter"></label>
+            <input id="entity-filter" class="input" type="search" data-ui-placeholder="characters.form.searchPlaceholder" />
+            <div class="record-list" id="entity-list"></div>
           </article>
 
-          <article class="card">
+          <article class="card detail-panel">
             <div class="panel-header">
-              <h3>Detail</h3>
-              <span class="badge" id="character-selected-status">No selection</span>
+              <h3 data-ui-text="characters.detailTitle"></h3>
+              <span class="badge" id="entity-selected-status" data-ui-text="common.noSelection"></span>
             </div>
-            <div id="character-detail" class="detail-stack"></div>
+
+            <div id="entity-detail" class="detail-stack"></div>
+
+            <section class="stack">
+              <div class="panel-header">
+                <h4 data-ui-text="common.tagsTitle"></h4>
+                <span class="muted" id="tag-count"></span>
+              </div>
+              <div id="entity-tags" class="chip-row"></div>
+              <form id="tag-form" class="inline-form">
+                <select id="tag-select" class="input"></select>
+                <button type="submit" class="button" data-ui-text="common.attachTag"></button>
+              </form>
+              <p class="form-message" id="tag-message" role="status" aria-live="polite"></p>
+            </section>
+
+            <section class="stack">
+              <div class="panel-header">
+                <h4 data-ui-text="common.linksTitle"></h4>
+                <span class="muted" id="link-count"></span>
+              </div>
+              <div id="entity-links" class="stack"></div>
+              <form id="link-form" class="form-grid compact-form">
+                <label class="field-label" for="link-target" data-ui-text="characters.links.targetLabel"></label>
+                <select id="link-target" class="input"></select>
+                <label class="field-label" for="link-label" data-ui-text="common.linkLabel"></label>
+                <input id="link-label" class="input" type="text" data-ui-placeholder="common.linkPlaceholder" />
+                <button type="submit" class="button" data-ui-text="common.addLink"></button>
+              </form>
+              <p class="form-message" id="link-message" role="status" aria-live="polite"></p>
+            </section>
+
             <div class="actions-row">
-              <button type="button" class="button button-danger" id="character-delete-btn">Delete Character</button>
+              <button type="button" class="button button-danger" id="entity-delete-btn" data-ui-text="characters.deleteButton"></button>
             </div>
           </article>
 
           <article class="card">
             <div class="panel-header">
-              <h3 id="character-form-title">Create Character</h3>
-              <span class="muted" id="character-form-mode">Mode: create</span>
+              <h3 id="entity-form-title" data-ui-text="characters.form.createTitle"></h3>
+              <span class="muted" id="entity-form-mode" data-ui-text="characters.form.createMode"></span>
             </div>
-            <form id="character-form" class="form-grid">
-              <label class="field-label" for="character-name">Name</label>
-              <input id="character-name" class="input" name="name" type="text" required />
 
-              <label class="field-label" for="character-slug">Slug (optional)</label>
-              <input id="character-slug" class="input" name="slug" type="text" />
+            <form id="entity-form" class="form-grid">
+              <label class="field-label" for="entity-name" data-ui-text="characters.form.name"></label>
+              <input id="entity-name" class="input" name="name" type="text" required />
 
-              <label class="field-label" for="character-summary">Summary</label>
-              <textarea id="character-summary" class="input textarea" name="summary" rows="3"></textarea>
+              <label class="field-label" for="entity-slug" data-ui-text="characters.form.slug"></label>
+              <input id="entity-slug" class="input" name="slug" type="text" />
 
-              <label class="field-label" for="character-pronouns">Pronouns (optional)</label>
-              <input id="character-pronouns" class="input" name="pronouns" type="text" />
+              <label class="field-label" for="entity-summary" data-ui-text="characters.form.summary"></label>
+              <textarea id="entity-summary" class="input textarea" name="summary" rows="3"></textarea>
 
-              <label class="field-label" for="character-epithet">Epithet (optional)</label>
-              <input id="character-epithet" class="input" name="epithet" type="text" />
+              <label class="field-label" for="entity-pronouns" data-ui-text="characters.form.pronouns"></label>
+              <input id="entity-pronouns" class="input" name="pronouns" type="text" />
+
+              <label class="field-label" for="entity-epithet" data-ui-text="characters.form.epithet"></label>
+              <input id="entity-epithet" class="input" name="epithet" type="text" />
 
               <div class="two-col">
                 <div>
-                  <label class="field-label" for="character-status">Status</label>
-                  <select id="character-status" class="input" name="status">
-                    <option value="draft">Draft</option>
-                    <option value="active">Active</option>
-                    <option value="archived">Archived</option>
+                  <label class="field-label" for="entity-status" data-ui-text="characters.form.status"></label>
+                  <select id="entity-status" class="input" name="status">
+                    <option value="draft" data-ui-text="characters.form.statusOptions.draft"></option>
+                    <option value="active" data-ui-text="characters.form.statusOptions.active"></option>
+                    <option value="archived" data-ui-text="characters.form.statusOptions.archived"></option>
                   </select>
                 </div>
                 <div>
-                  <label class="field-label" for="character-canon">Canon State</label>
-                  <select id="character-canon" class="input" name="canonState">
-                    <option value="canonical">Canonical</option>
-                    <option value="alternate">Alternate</option>
-                    <option value="uncertain">Uncertain</option>
-                    <option value="noncanonical">Noncanonical</option>
+                  <label class="field-label" for="entity-canon" data-ui-text="characters.form.canon"></label>
+                  <select id="entity-canon" class="input" name="canonState">
+                    <option value="canonical" data-ui-text="characters.form.canonOptions.canonical"></option>
+                    <option value="alternate" data-ui-text="characters.form.canonOptions.alternate"></option>
+                    <option value="uncertain" data-ui-text="characters.form.canonOptions.uncertain"></option>
+                    <option value="noncanonical" data-ui-text="characters.form.canonOptions.noncanonical"></option>
                   </select>
                 </div>
               </div>
 
-              <p class="form-message" id="character-form-message" role="status" aria-live="polite"></p>
+              <p class="form-message" id="entity-form-message" role="status" aria-live="polite"></p>
               <div class="actions-row">
-                <button type="submit" class="button" id="character-save-btn">Save Character</button>
-                <button type="button" class="button-link" id="character-cancel-btn">Reset Form</button>
+                <button type="submit" class="button" data-ui-text="characters.form.save"></button>
+                <button type="button" class="button-link" id="entity-cancel-btn" data-ui-text="characters.form.reset"></button>
               </div>
             </form>
           </article>
         </section>
       </main>
     </div>
+
+    <script src="./ui-text.js"></script>
     <script src="./mock-app.js"></script>
   </body>
 </html>
