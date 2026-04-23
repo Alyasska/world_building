@@ -3,15 +3,14 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { ContentField } from '@/components/ui/content-field';
 import { FormField } from '@/components/ui/form-field';
 import { SelectField } from '@/components/ui/select-field';
 import { TextareaField } from '@/components/ui/textarea-field';
 import { eventDatePrecisionValues, type EventDatePrecision } from '@/lib/event-date-precision';
 import type { PlaceScale } from '@/lib/place-scale';
-import { getUiText } from '@/lib/i18n/ui';
 import { normalizeText, toDateInputValue, toInputValue, toTextareaValue } from '@/lib/form';
-
-const ui = getUiText();
+import { useUiText } from '@/lib/i18n/use-ui-text';
 
 type EventFormValues = {
   title: string;
@@ -48,26 +47,24 @@ type EventFormProps = {
   storyOptions: EventStoryOption[];
 };
 
-const statusOptions = [
-  { label: ui.status.draft, value: 'draft' },
-  { label: ui.status.active, value: 'active' },
-  { label: ui.status.archived, value: 'archived' },
-];
-
-const canonOptions = [
-  { label: ui.status.canonical, value: 'canonical' },
-  { label: ui.status.alternate, value: 'alternate' },
-  { label: ui.status.uncertain, value: 'uncertain' },
-  { label: ui.status.noncanonical, value: 'noncanonical' },
-];
-
-const datePrecisionOptions = eventDatePrecisionValues.map((value) => ({
-  label: ui.events.datePrecisionOptions[value],
-  value,
-}));
-
 export function EventForm({ mode, endpoint, redirectTo, initialValues, placeOptions, storyOptions }: EventFormProps) {
+  const ui = useUiText();
   const router = useRouter();
+  const statusOptions = [
+    { label: ui.status.draft, value: 'draft' },
+    { label: ui.status.active, value: 'active' },
+    { label: ui.status.archived, value: 'archived' },
+  ];
+  const canonOptions = [
+    { label: ui.status.canonical, value: 'canonical' },
+    { label: ui.status.alternate, value: 'alternate' },
+    { label: ui.status.uncertain, value: 'uncertain' },
+    { label: ui.status.noncanonical, value: 'noncanonical' },
+  ];
+  const datePrecisionOptions = eventDatePrecisionValues.map((value) => ({
+    label: ui.events.datePrecisionOptions[value],
+    value,
+  }));
   const [form, setForm] = useState<EventFormValues>({
     title: initialValues?.title ?? '',
     slug: initialValues?.slug ?? '',
@@ -194,7 +191,7 @@ export function EventForm({ mode, endpoint, redirectTo, initialValues, placeOpti
           onChange={(value) => setForm((current) => ({ ...current, datePrecision: value as EventDatePrecision }))}
           hint={ui.events.form.datePrecisionHint}
         />
-        <TextareaField label={ui.events.form.content} name="content" value={toTextareaValue(form.content)} onChange={(value) => setForm((current) => ({ ...current, content: value }))} hint={ui.events.form.contentHint} />
+        <ContentField label={ui.events.form.content} name="content" value={toTextareaValue(form.content)} onChange={(value) => setForm((current) => ({ ...current, content: value }))} hint={ui.events.form.contentHint} />
         <SelectField label={ui.events.form.status} name="status" value={toInputValue(form.status)} options={statusOptions} onChange={(value) => setForm((current) => ({ ...current, status: value }))} />
         <SelectField label={ui.events.form.canonState} name="canonState" value={toInputValue(form.canonState)} options={canonOptions} onChange={(value) => setForm((current) => ({ ...current, canonState: value }))} />
         {error ? <p className="field__error">{error}</p> : null}

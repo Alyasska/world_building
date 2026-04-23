@@ -3,13 +3,12 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { ContentField } from '@/components/ui/content-field';
 import { FormField } from '@/components/ui/form-field';
 import { SelectField } from '@/components/ui/select-field';
 import { TextareaField } from '@/components/ui/textarea-field';
-import { getUiText } from '@/lib/i18n/ui';
 import { normalizeText, toInputValue, toTextareaValue } from '@/lib/form';
-
-const ui = getUiText();
+import { useUiText } from '@/lib/i18n/use-ui-text';
 
 type LoreEntryFormValues = {
   title: string;
@@ -29,21 +28,20 @@ type LoreEntryFormProps = {
   initialValues?: Partial<LoreEntryFormValues>;
 };
 
-const statusOptions = [
-  { label: ui.status.draft, value: 'draft' },
-  { label: ui.status.active, value: 'active' },
-  { label: ui.status.archived, value: 'archived' },
-];
-
-const canonOptions = [
-  { label: ui.status.canonical, value: 'canonical' },
-  { label: ui.status.alternate, value: 'alternate' },
-  { label: ui.status.uncertain, value: 'uncertain' },
-  { label: ui.status.noncanonical, value: 'noncanonical' },
-];
-
 export function LoreEntryForm({ mode, endpoint, redirectTo, initialValues }: LoreEntryFormProps) {
+  const ui = useUiText();
   const router = useRouter();
+  const statusOptions = [
+    { label: ui.status.draft, value: 'draft' },
+    { label: ui.status.active, value: 'active' },
+    { label: ui.status.archived, value: 'archived' },
+  ];
+  const canonOptions = [
+    { label: ui.status.canonical, value: 'canonical' },
+    { label: ui.status.alternate, value: 'alternate' },
+    { label: ui.status.uncertain, value: 'uncertain' },
+    { label: ui.status.noncanonical, value: 'noncanonical' },
+  ];
   const [form, setForm] = useState<LoreEntryFormValues>({
     title: initialValues?.title ?? '',
     slug: initialValues?.slug ?? '',
@@ -117,7 +115,7 @@ export function LoreEntryForm({ mode, endpoint, redirectTo, initialValues }: Lor
         <TextareaField label={ui.loreEntries.form.summary} name="summary" value={form.summary} onChange={(v) => setForm((c) => ({ ...c, summary: v }))} rows={3} />
         <FormField label={ui.loreEntries.form.entryKind} name="entryKind" value={form.entryKind} onChange={(v) => setForm((c) => ({ ...c, entryKind: v }))} hint={ui.loreEntries.form.entryKindHint} />
         <FormField label={ui.loreEntries.form.topic} name="topic" value={form.topic} onChange={(v) => setForm((c) => ({ ...c, topic: v }))} hint={ui.loreEntries.form.topicHint} />
-        <TextareaField
+        <ContentField
           label={ui.loreEntries.form.content}
           name="content"
           value={toTextareaValue(form.content)}

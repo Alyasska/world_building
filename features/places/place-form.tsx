@@ -3,14 +3,13 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { ContentField } from '@/components/ui/content-field';
 import { FormField } from '@/components/ui/form-field';
 import { SelectField } from '@/components/ui/select-field';
 import { TextareaField } from '@/components/ui/textarea-field';
 import { placeScaleValues, type PlaceScale } from '@/lib/place-scale';
-import { getUiText } from '@/lib/i18n/ui';
 import { normalizeText, toInputValue, toTextareaValue } from '@/lib/form';
-
-const ui = getUiText();
+import { useUiText } from '@/lib/i18n/use-ui-text';
 
 type PlaceFormValues = {
   name: string;
@@ -39,26 +38,24 @@ type PlaceFormProps = {
   parentOptions: PlaceParentOption[];
 };
 
-const statusOptions = [
-  { label: ui.status.draft, value: 'draft' },
-  { label: ui.status.active, value: 'active' },
-  { label: ui.status.archived, value: 'archived' },
-];
-
-const canonOptions = [
-  { label: ui.status.canonical, value: 'canonical' },
-  { label: ui.status.alternate, value: 'alternate' },
-  { label: ui.status.uncertain, value: 'uncertain' },
-  { label: ui.status.noncanonical, value: 'noncanonical' },
-];
-
-const placeScaleOptions = placeScaleValues.map((value) => ({
-  label: ui.places.scaleOptions[value],
-  value,
-}));
-
 export function PlaceForm({ mode, endpoint, redirectTo, initialValues, parentOptions }: PlaceFormProps) {
+  const ui = useUiText();
   const router = useRouter();
+  const statusOptions = [
+    { label: ui.status.draft, value: 'draft' },
+    { label: ui.status.active, value: 'active' },
+    { label: ui.status.archived, value: 'archived' },
+  ];
+  const canonOptions = [
+    { label: ui.status.canonical, value: 'canonical' },
+    { label: ui.status.alternate, value: 'alternate' },
+    { label: ui.status.uncertain, value: 'uncertain' },
+    { label: ui.status.noncanonical, value: 'noncanonical' },
+  ];
+  const placeScaleOptions = placeScaleValues.map((value) => ({
+    label: ui.places.scaleOptions[value],
+    value,
+  }));
   const [form, setForm] = useState<PlaceFormValues>({
     name: initialValues?.name ?? '',
     slug: initialValues?.slug ?? '',
@@ -159,7 +156,7 @@ export function PlaceForm({ mode, endpoint, redirectTo, initialValues, parentOpt
           hint={ui.places.form.parentPlaceHint}
         />
         <FormField label={ui.places.form.placeKind} name="placeKind" value={form.placeKind} onChange={(value) => setForm((current) => ({ ...current, placeKind: value }))} hint={ui.places.form.placeKindHint} />
-        <TextareaField
+        <ContentField
           label={ui.places.form.content}
           name="content"
           value={toTextareaValue(form.content)}

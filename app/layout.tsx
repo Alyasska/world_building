@@ -1,40 +1,38 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
-import { SiteNav } from '@/components/site-nav';
-import { GlobalSearchForm } from '@/components/ui/global-search-form';
-import { defaultUiLocale, getUiText } from '@/lib/i18n/ui';
+import { PT_Serif } from 'next/font/google';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
+import { getRequestUiLocale } from '@/lib/i18n/request';
 import './globals.css';
 
-const ui = getUiText();
+const ptSerif = PT_Serif({
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  subsets: ['latin', 'cyrillic'],
+  variable: '--font-serif',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
-  title: ui.meta.appTitle,
-  description: ui.meta.appDescription,
+  title: 'World Engine',
+  description: 'Private worldbuilding workspace',
 };
 
 export const viewport: Viewport = {
   themeColor: '#0f1115',
 };
 
-type RootLayoutProps = {
-  children: ReactNode;
-};
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const locale = await getRequestUiLocale();
+  const [messages, intlLocale] = await Promise.all([getMessages(), getLocale()]);
 
-export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang={defaultUiLocale}>
+    <html lang={locale} className={ptSerif.variable}>
       <body>
-        <div className="app-shell">
-          <aside className="app-shell__sidebar">
-            <div className="app-shell__brand">
-              <h1 className="app-shell__brand-title">{ui.shell.brandTitle}</h1>
-              <p className="app-shell__brand-note">{ui.shell.brandNote}</p>
-            </div>
-            <GlobalSearchForm />
-            <SiteNav />
-          </aside>
-          <main className="app-shell__main">{children}</main>
-        </div>
+        <NextIntlClientProvider locale={intlLocale} messages={messages}>
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );

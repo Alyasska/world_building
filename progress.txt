@@ -1,7 +1,7 @@
 # World Engine — Progress Tracker
 
 Last updated: 2026-04-23
-Current position: Phase 4 complete (tasks 23–29 done). Next: Phase 5 — Auth.js (task 30)
+Current position: Phase 5 foundation in progress (tasks 30-32 done, 33-34 scaffolded)
 
 ---
 
@@ -56,11 +56,11 @@ Current position: Phase 4 complete (tasks 23–29 done). Next: Phase 5 — Auth.
 
 ## Phase 5 — Infrastructure Integrations
 
-[ ] 30. Auth.js authentication
-[ ] 31. Route protection and session handling
-[ ] 32. next-intl (replace custom getUiText())
-[ ] 33. Meilisearch (replace Prisma contains search)
-[ ] 34. Tiptap rich text editor
+[x] 30. Auth.js authentication
+[x] 31. Route protection and session handling
+[x] 32. next-intl (minimal foundation, Russian-first with English fallback)
+[~] 33. Meilisearch (thin provider seam added, Prisma still active)
+[~] 34. Tiptap rich text editor (shared content field seam added, editor deferred)
 
 ## Phase 6 — Map Evolution
 
@@ -124,3 +124,4 @@ Every entity follows the same 7-file pattern. Use Faction as the reference (simp
 - Pattern: service (list/create/delete) + POST+DELETE API routes + "use client" panel widget wired into detail page
 - Widget receives pre-fetched lists as props; names/hrefs resolved server-side before passing down
 - entityType strings in EntityTag/EntityLink: 'character', 'place', 'faction', 'lore-entry', 'rule-system'
+

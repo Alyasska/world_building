@@ -1,11 +1,10 @@
 "use client";
 
 import { useSearchParams } from 'next/navigation';
-import { getUiText } from '@/lib/i18n/ui';
-
-const ui = getUiText();
+import { useUiText } from '@/lib/i18n/use-ui-text';
 
 export function GlobalSearchForm() {
+  const ui = useUiText();
   const searchParams = useSearchParams();
   const currentQuery = searchParams.get('q') ?? '';
 

@@ -1,6 +1,6 @@
-import { getUiText } from '@/lib/i18n/ui';
+"use client";
 
-const ui = getUiText();
+import { useUiText } from '@/lib/i18n/use-ui-text';
 
 type FormFieldProps = {
   label: string;
@@ -27,6 +27,8 @@ export function FormField({
   error,
   autoComplete,
 }: FormFieldProps) {
+  const ui = useUiText();
+
   return (
     <label className="field" htmlFor={name}>
       <span className="field__label">

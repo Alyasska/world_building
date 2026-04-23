@@ -3,13 +3,12 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { ContentField } from '@/components/ui/content-field';
 import { FormField } from '@/components/ui/form-field';
 import { SelectField } from '@/components/ui/select-field';
 import { TextareaField } from '@/components/ui/textarea-field';
-import { getUiText } from '@/lib/i18n/ui';
 import { normalizeText, toInputValue, toTextareaValue } from '@/lib/form';
-
-const ui = getUiText();
+import { useUiText } from '@/lib/i18n/use-ui-text';
 
 type CharacterFormValues = {
   name: string;
@@ -27,21 +26,20 @@ type CharacterFormProps = {
   initialValues?: Partial<CharacterFormValues>;
 };
 
-const statusOptions = [
-  { label: ui.status.draft, value: 'draft' },
-  { label: ui.status.active, value: 'active' },
-  { label: ui.status.archived, value: 'archived' },
-];
-
-const canonOptions = [
-  { label: ui.status.canonical, value: 'canonical' },
-  { label: ui.status.alternate, value: 'alternate' },
-  { label: ui.status.uncertain, value: 'uncertain' },
-  { label: ui.status.noncanonical, value: 'noncanonical' },
-];
-
 export function CharacterForm({ mode, endpoint, redirectTo, initialValues }: CharacterFormProps) {
+  const ui = useUiText();
   const router = useRouter();
+  const statusOptions = [
+    { label: ui.status.draft, value: 'draft' },
+    { label: ui.status.active, value: 'active' },
+    { label: ui.status.archived, value: 'archived' },
+  ];
+  const canonOptions = [
+    { label: ui.status.canonical, value: 'canonical' },
+    { label: ui.status.alternate, value: 'alternate' },
+    { label: ui.status.uncertain, value: 'uncertain' },
+    { label: ui.status.noncanonical, value: 'noncanonical' },
+  ];
   const [form, setForm] = useState<CharacterFormValues>({
     name: initialValues?.name ?? '',
     slug: initialValues?.slug ?? '',
@@ -111,7 +109,7 @@ export function CharacterForm({ mode, endpoint, redirectTo, initialValues }: Cha
         <FormField label={ui.characters.form.name} name="name" value={form.name} onChange={(value) => setForm((current) => ({ ...current, name: value }))} required autoComplete="off" />
         <FormField label={ui.characters.form.slug} name="slug" value={form.slug} onChange={(value) => setForm((current) => ({ ...current, slug: value }))} hint={ui.characters.form.slugHint} />
         <TextareaField label={ui.characters.form.summary} name="summary" value={form.summary} onChange={(value) => setForm((current) => ({ ...current, summary: value }))} rows={3} />
-        <TextareaField
+        <ContentField
           label={ui.characters.form.content}
           name="content"
           value={toTextareaValue(form.content)}

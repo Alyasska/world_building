@@ -3,13 +3,12 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { ContentField } from '@/components/ui/content-field';
 import { FormField } from '@/components/ui/form-field';
 import { SelectField } from '@/components/ui/select-field';
 import { TextareaField } from '@/components/ui/textarea-field';
-import { getUiText } from '@/lib/i18n/ui';
 import { normalizeText, toInputValue, toTextareaValue } from '@/lib/form';
-
-const ui = getUiText();
+import { useUiText } from '@/lib/i18n/use-ui-text';
 
 type FactionFormValues = {
   name: string;
@@ -28,21 +27,20 @@ type FactionFormProps = {
   initialValues?: Partial<FactionFormValues>;
 };
 
-const statusOptions = [
-  { label: ui.status.draft, value: 'draft' },
-  { label: ui.status.active, value: 'active' },
-  { label: ui.status.archived, value: 'archived' },
-];
-
-const canonOptions = [
-  { label: ui.status.canonical, value: 'canonical' },
-  { label: ui.status.alternate, value: 'alternate' },
-  { label: ui.status.uncertain, value: 'uncertain' },
-  { label: ui.status.noncanonical, value: 'noncanonical' },
-];
-
 export function FactionForm({ mode, endpoint, redirectTo, initialValues }: FactionFormProps) {
+  const ui = useUiText();
   const router = useRouter();
+  const statusOptions = [
+    { label: ui.status.draft, value: 'draft' },
+    { label: ui.status.active, value: 'active' },
+    { label: ui.status.archived, value: 'archived' },
+  ];
+  const canonOptions = [
+    { label: ui.status.canonical, value: 'canonical' },
+    { label: ui.status.alternate, value: 'alternate' },
+    { label: ui.status.uncertain, value: 'uncertain' },
+    { label: ui.status.noncanonical, value: 'noncanonical' },
+  ];
   const [form, setForm] = useState<FactionFormValues>({
     name: initialValues?.name ?? '',
     slug: initialValues?.slug ?? '',
@@ -115,7 +113,7 @@ export function FactionForm({ mode, endpoint, redirectTo, initialValues }: Facti
         <FormField label={ui.factions.form.slug} name="slug" value={form.slug} onChange={(value) => setForm((current) => ({ ...current, slug: value }))} hint={ui.factions.form.slugHint} />
         <TextareaField label={ui.factions.form.summary} name="summary" value={form.summary} onChange={(value) => setForm((current) => ({ ...current, summary: value }))} rows={3} />
         <FormField label={ui.factions.form.factionKind} name="factionKind" value={form.factionKind} onChange={(value) => setForm((current) => ({ ...current, factionKind: value }))} hint={ui.factions.form.factionKindHint} />
-        <TextareaField
+        <ContentField
           label={ui.factions.form.content}
           name="content"
           value={toTextareaValue(form.content)}

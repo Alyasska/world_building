@@ -50,6 +50,17 @@ const uiText = {
       confirmDelete: 'Удалить эту запись?',
       required: 'Обязательно',
       deleteFailed: 'Не удалось удалить запись',
+      datacore: 'Данные',
+      entityTypes: {
+        character: 'Персонаж',
+        place: 'Место',
+        faction: 'Фракция',
+        loreEntry: 'Лор',
+        story: 'История',
+        event: 'Событие',
+        ruleSystem: 'Система правил',
+        asset: 'Ресурс',
+      },
     },
     tags: {
       title: 'Теги',
@@ -534,6 +545,17 @@ const uiText = {
       confirmDelete: 'Delete this record?',
       required: 'Required',
       deleteFailed: 'Delete failed',
+      datacore: 'Datacore',
+      entityTypes: {
+        character: 'Character',
+        place: 'Place',
+        faction: 'Faction',
+        loreEntry: 'Lore',
+        story: 'Story',
+        event: 'Event',
+        ruleSystem: 'Rule System',
+        asset: 'Asset',
+      },
     },
     tags: {
       title: 'Tags',
@@ -1239,6 +1261,7 @@ const mapUiText = {
       regionList: 'Регионы',
       unbound: 'Без привязки к месту',
       coordinateNote: 'Система координат: 0–1000 × 0–1000',
+      allLayers: 'Все слои',
     },
   },
   en: {
@@ -1257,11 +1280,41 @@ const mapUiText = {
       regionList: 'Regions',
       unbound: 'Not bound to a place',
       coordinateNote: 'Coordinate space: 0–1000 × 0–1000',
+      allLayers: 'All layers',
     },
   },
 } as const;
 
-export function getUiText(locale: UiLocale = defaultUiLocale) {
+const authUiText = {
+  ru: {
+    auth: {
+      title: 'Вход',
+      description: 'Минимальный вход для приватной рабочей зоны.',
+      username: 'Логин',
+      password: 'Пароль',
+      signIn: 'Войти',
+      signingIn: 'Вход…',
+      signOut: 'Выйти',
+      invalidCredentials: 'Неверный логин или пароль.',
+      back: 'Назад',
+    },
+  },
+  en: {
+    auth: {
+      title: 'Sign in',
+      description: 'Minimal sign-in for the private workspace.',
+      username: 'Username',
+      password: 'Password',
+      signIn: 'Sign in',
+      signingIn: 'Signing in…',
+      signOut: 'Sign out',
+      invalidCredentials: 'Invalid username or password.',
+      back: 'Back',
+    },
+  },
+} as const;
+
+function buildUiText(locale: UiLocale = defaultUiLocale) {
   const base = {
     ...uiText[locale],
     nav: {
@@ -1274,9 +1327,27 @@ export function getUiText(locale: UiLocale = defaultUiLocale) {
   const withNarrative = mergeUiText(base, narrativeUiText[locale]);
   const withParticipants = mergeUiText(withNarrative, participantUiText[locale]);
   const withMap = mergeUiText(withParticipants, mapUiText[locale]);
+  const withAuth = mergeUiText(withMap, authUiText[locale]);
 
-  return withMap as typeof base &
+  return withAuth as typeof base &
     (typeof narrativeUiText)[UiLocale] &
     (typeof participantUiText)[UiLocale] &
-    (typeof mapUiText)[UiLocale];
+    (typeof mapUiText)[UiLocale] &
+    (typeof authUiText)[UiLocale];
+}
+
+export function getUiText(locale: UiLocale = defaultUiLocale) {
+  return buildUiText(locale);
+}
+
+export function getIntlMessages(locale: UiLocale = defaultUiLocale) {
+  const ui = buildUiText(locale);
+
+  return {
+    ...ui,
+    places: {
+      ...ui.places,
+      childrenCount: locale === 'ru' ? 'Дочерних мест: {count}' : 'Child places: {count}',
+    },
+  };
 }

@@ -2,9 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { getUiText } from '@/lib/i18n/ui';
-
-const ui = getUiText();
+import { useUiText } from '@/lib/i18n/use-ui-text';
 
 type DeleteButtonProps = {
   endpoint: string;
@@ -13,13 +11,16 @@ type DeleteButtonProps = {
   confirmText?: string;
 };
 
-export function DeleteButton({ endpoint, redirectTo, label = ui.common.delete, confirmText = ui.common.confirmDelete }: DeleteButtonProps) {
+export function DeleteButton({ endpoint, redirectTo, label, confirmText }: DeleteButtonProps) {
+  const ui = useUiText();
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const resolvedLabel = label ?? ui.common.delete;
+  const resolvedConfirmText = confirmText ?? ui.common.confirmDelete;
 
   async function handleDelete() {
-    if (!window.confirm(confirmText)) {
+    if (!window.confirm(resolvedConfirmText)) {
       return;
     }
 
@@ -46,7 +47,7 @@ export function DeleteButton({ endpoint, redirectTo, label = ui.common.delete, c
   return (
     <>
       <button type="button" className="button button--danger" onClick={handleDelete} disabled={isDeleting}>
-        {isDeleting ? ui.common.deleting : label}
+        {isDeleting ? ui.common.deleting : resolvedLabel}
       </button>
       {error ? <p className="field__error">{error}</p> : null}
     </>

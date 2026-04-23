@@ -2,25 +2,23 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { getUiText } from '@/lib/i18n/ui';
-
-const ui = getUiText();
-
-const links = [
-  { href: '/world', label: ui.nav.world },
-  { href: '/maps', label: ui.nav.maps },
-  { href: '/places', label: ui.nav.places },
-  { href: '/stories', label: ui.nav.stories },
-  { href: '/events', label: ui.nav.events },
-  { href: '/characters', label: ui.nav.characters },
-  { href: '/factions', label: ui.nav.factions },
-  { href: '/lore-entries', label: ui.nav.loreEntries },
-  { href: '/rule-systems', label: ui.nav.ruleSystems },
-  { href: '/assets', label: ui.nav.assets },
-];
+import { useUiText } from '@/lib/i18n/use-ui-text';
 
 export function SiteNav() {
+  const ui = useUiText();
   const pathname = usePathname();
+  const links = [
+    { href: '/world', label: ui.nav.world },
+    { href: '/maps', label: ui.nav.maps },
+    { href: '/places', label: ui.nav.places },
+    { href: '/stories', label: ui.nav.stories },
+    { href: '/events', label: ui.nav.events },
+    { href: '/characters', label: ui.nav.characters },
+    { href: '/factions', label: ui.nav.factions },
+    { href: '/lore-entries', label: ui.nav.loreEntries },
+    { href: '/rule-systems', label: ui.nav.ruleSystems },
+    { href: '/assets', label: ui.nav.assets },
+  ];
 
   return (
     <nav className="site-nav" aria-label={ui.nav.ariaLabel}>

@@ -1,6 +1,6 @@
-import { getUiText } from '@/lib/i18n/ui';
+"use client";
 
-const ui = getUiText();
+import { useUiText } from '@/lib/i18n/use-ui-text';
 
 type TextareaFieldProps = {
   label: string;
@@ -25,6 +25,8 @@ export function TextareaField({
   error,
   rows = 8,
 }: TextareaFieldProps) {
+  const ui = useUiText();
+
   return (
     <label className="field" htmlFor={name}>
       <span className="field__label">

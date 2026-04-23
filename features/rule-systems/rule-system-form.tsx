@@ -3,13 +3,12 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { ContentField } from '@/components/ui/content-field';
 import { FormField } from '@/components/ui/form-field';
 import { SelectField } from '@/components/ui/select-field';
 import { TextareaField } from '@/components/ui/textarea-field';
-import { getUiText } from '@/lib/i18n/ui';
 import { normalizeText, toInputValue, toTextareaValue } from '@/lib/form';
-
-const ui = getUiText();
+import { useUiText } from '@/lib/i18n/use-ui-text';
 
 type RuleSystemFormValues = {
   title: string;
@@ -30,21 +29,20 @@ type RuleSystemFormProps = {
   initialValues?: Partial<RuleSystemFormValues>;
 };
 
-const statusOptions = [
-  { label: ui.status.draft, value: 'draft' },
-  { label: ui.status.active, value: 'active' },
-  { label: ui.status.archived, value: 'archived' },
-];
-
-const canonOptions = [
-  { label: ui.status.canonical, value: 'canonical' },
-  { label: ui.status.alternate, value: 'alternate' },
-  { label: ui.status.uncertain, value: 'uncertain' },
-  { label: ui.status.noncanonical, value: 'noncanonical' },
-];
-
 export function RuleSystemForm({ mode, endpoint, redirectTo, initialValues }: RuleSystemFormProps) {
+  const ui = useUiText();
   const router = useRouter();
+  const statusOptions = [
+    { label: ui.status.draft, value: 'draft' },
+    { label: ui.status.active, value: 'active' },
+    { label: ui.status.archived, value: 'archived' },
+  ];
+  const canonOptions = [
+    { label: ui.status.canonical, value: 'canonical' },
+    { label: ui.status.alternate, value: 'alternate' },
+    { label: ui.status.uncertain, value: 'uncertain' },
+    { label: ui.status.noncanonical, value: 'noncanonical' },
+  ];
   const [form, setForm] = useState<RuleSystemFormValues>({
     title: initialValues?.title ?? '',
     slug: initialValues?.slug ?? '',
@@ -109,7 +107,7 @@ export function RuleSystemForm({ mode, endpoint, redirectTo, initialValues }: Ru
         <FormField label={ui.ruleSystems.form.systemKind} name="systemKind" value={form.systemKind} onChange={set('systemKind')} hint={ui.ruleSystems.form.systemKindHint} />
         <FormField label={ui.ruleSystems.form.versionLabel} name="versionLabel" value={form.versionLabel} onChange={set('versionLabel')} hint={ui.ruleSystems.form.versionLabelHint} />
         <FormField label={ui.ruleSystems.form.appliesTo} name="appliesTo" value={form.appliesTo} onChange={set('appliesTo')} hint={ui.ruleSystems.form.appliesToHint} />
-        <TextareaField label={ui.ruleSystems.form.content} name="content" value={toTextareaValue(form.content)} onChange={set('content')} hint={ui.ruleSystems.form.contentHint} />
+        <ContentField label={ui.ruleSystems.form.content} name="content" value={toTextareaValue(form.content)} onChange={set('content')} hint={ui.ruleSystems.form.contentHint} />
         <SelectField label={ui.ruleSystems.form.status} name="status" value={toInputValue(form.status)} options={statusOptions} onChange={set('status')} />
         <SelectField label={ui.ruleSystems.form.canonState} name="canonState" value={toInputValue(form.canonState)} options={canonOptions} onChange={set('canonState')} />
         {error ? <p className="field__error">{error}</p> : null}
