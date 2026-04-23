@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { storyCreateSchema, storyIdSchema, storyUpdateSchema } from '@/schemas/story';
 import { resolveStorySlug } from './slug';
+import { toJsonWrite } from '@/lib/prisma-json';
 
 const placeReferenceSelect = {
   id: true,
@@ -156,23 +157,24 @@ export async function updateStory(id: string, input: unknown): Promise<StoryReco
     ? await resolveStorySlug(parsed.title ?? existing.title, parsed.slug, id)
     : existing.slug;
 
-  return prisma.story.update({
+  await prisma.story.update({
     where: { id },
     data: {
       title: parsed.title ?? existing.title,
       slug: nextSlug,
       summary: parsed.summary === undefined ? existing.summary : parsed.summary,
-      content: parsed.content === undefined ? existing.content : (parsed.content as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
+      content: parsed.content === undefined ? toJsonWrite(existing.content) : (parsed.content as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
       status: parsed.status ?? existing.status,
       canonState: parsed.canonState ?? existing.canonState,
-      metadata: parsed.metadata === undefined ? existing.metadata : (parsed.metadata as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
+      metadata: parsed.metadata === undefined ? toJsonWrite(existing.metadata) : (parsed.metadata as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
       storyKind: parsed.storyKind === undefined ? existing.storyKind : parsed.storyKind,
       primaryPlaceId: nextPrimaryPlaceId ?? null,
       startDateText: parsed.startDateText === undefined ? existing.startDateText : parsed.startDateText,
       endDateText: parsed.endDateText === undefined ? existing.endDateText : parsed.endDateText,
     },
-    select: storyDetailSelect,
   });
+
+  return getStory(id);
 }
 
 export async function deleteStory(id: string): Promise<StoryRecord | null> {

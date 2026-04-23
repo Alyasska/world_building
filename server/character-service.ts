@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { characterCreateSchema, characterIdSchema, characterUpdateSchema } from '@/schemas/character';
 import { resolveCharacterSlug } from './slug';
+import { toJsonWrite } from '@/lib/prisma-json';
 
 const characterSelect = {
   id: true,
@@ -90,11 +91,11 @@ export async function updateCharacter(id: string, input: unknown): Promise<Chara
       name: parsed.name ?? existing.name,
       slug: nextSlug,
       summary: parsed.summary === undefined ? existing.summary : parsed.summary,
-      content: parsed.content === undefined ? existing.content : (parsed.content as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
+      content: parsed.content === undefined ? toJsonWrite(existing.content) : (parsed.content as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
       status: parsed.status ?? existing.status,
       canonState: parsed.canonState ?? existing.canonState,
-      metadata: parsed.metadata === undefined ? existing.metadata : (parsed.metadata as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
-      aliases: parsed.aliases === undefined ? existing.aliases : (parsed.aliases as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
+      metadata: parsed.metadata === undefined ? toJsonWrite(existing.metadata) : (parsed.metadata as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
+      aliases: parsed.aliases === undefined ? toJsonWrite(existing.aliases) : (parsed.aliases as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
       pronouns: parsed.pronouns === undefined ? existing.pronouns : parsed.pronouns,
       epithet: parsed.epithet === undefined ? existing.epithet : parsed.epithet,
       birthDateText: parsed.birthDateText === undefined ? existing.birthDateText : parsed.birthDateText,

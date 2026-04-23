@@ -34,7 +34,7 @@ type PlaceParentOption = {
 type PlaceFormProps = {
   mode: 'create' | 'edit';
   endpoint: string;
-  redirectTo: (id: string) => string;
+  redirectTo: string;
   initialValues?: Partial<PlaceFormValues>;
   parentOptions: PlaceParentOption[];
 };
@@ -121,7 +121,7 @@ export function PlaceForm({ mode, endpoint, redirectTo, initialValues, parentOpt
         throw new Error(ui.places.form.invalidResponse);
       }
 
-      router.push(redirectTo(placeId));
+      router.push(`${redirectTo}/${placeId}`);
       router.refresh();
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : ui.places.form.saveFailed);

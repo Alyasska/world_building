@@ -31,7 +31,7 @@ export default async function EditCharacterPage({ params }: PageProps) {
       <CharacterForm
         mode="edit"
         endpoint={`/api/characters/${character.id}`}
-        redirectTo={(entityId) => `/characters/${entityId}`}
+        redirectTo="/characters"
         initialValues={{
           name: character.name,
           slug: character.slug,

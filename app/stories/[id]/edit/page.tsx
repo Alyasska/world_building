@@ -32,7 +32,7 @@ export default async function EditStoryPage({ params }: PageProps) {
       <StoryForm
         mode="edit"
         endpoint={`/api/stories/${story.id}`}
-        redirectTo={(entityId) => `/stories/${entityId}`}
+        redirectTo="/stories"
         initialValues={{
           title: story.title,
           slug: story.slug,

@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { tagCreateSchema, tagIdSchema, tagUpdateSchema } from '@/schemas/tag';
 import { resolveTagSlug } from './slug';
+import { toJsonWrite } from '@/lib/prisma-json';
 
 const tagSelect = {
   id: true,
@@ -73,10 +74,10 @@ export async function updateTag(id: string, input: unknown) {
       name: parsed.name ?? existing.name,
       slug: nextSlug,
       summary: parsed.summary === undefined ? existing.summary : parsed.summary,
-      content: parsed.content === undefined ? existing.content : (parsed.content as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
+      content: parsed.content === undefined ? toJsonWrite(existing.content) : (parsed.content as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
       status: parsed.status ?? existing.status,
       canonState: parsed.canonState ?? existing.canonState,
-      metadata: parsed.metadata === undefined ? existing.metadata : (parsed.metadata as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
+      metadata: parsed.metadata === undefined ? toJsonWrite(existing.metadata) : (parsed.metadata as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
       color: parsed.color === undefined ? existing.color : parsed.color,
       namespace: parsed.namespace ?? existing.namespace,
     },

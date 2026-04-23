@@ -52,6 +52,7 @@ const eventParticipantSelect = {
   participantRole: true,
   sequence: true,
   note: true,
+  status: true,
   createdAt: true,
   updatedAt: true,
   deletedAt: true,

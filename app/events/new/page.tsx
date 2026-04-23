@@ -21,7 +21,7 @@ export default async function NewEventPage() {
       <EventForm
         mode="create"
         endpoint="/api/events"
-        redirectTo={(id) => `/events/${id}`}
+        redirectTo="/events"
         placeOptions={places.map((place) => ({
           id: place.id,
           name: place.name,

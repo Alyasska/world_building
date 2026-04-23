@@ -20,7 +20,7 @@ export default async function NewStoryPage() {
       <StoryForm
         mode="create"
         endpoint="/api/stories"
-        redirectTo={(id) => `/stories/${id}`}
+        redirectTo="/stories"
         placeOptions={places.map((place) => ({
           id: place.id,
           name: place.name,

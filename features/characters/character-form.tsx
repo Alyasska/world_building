@@ -23,7 +23,7 @@ type CharacterFormValues = {
 type CharacterFormProps = {
   mode: 'create' | 'edit';
   endpoint: string;
-  redirectTo: (id: string) => string;
+  redirectTo: string;
   initialValues?: Partial<CharacterFormValues>;
 };
 
@@ -96,7 +96,7 @@ export function CharacterForm({ mode, endpoint, redirectTo, initialValues }: Cha
         throw new Error(ui.characters.form.invalidResponse);
       }
 
-      router.push(redirectTo(characterId));
+      router.push(`${redirectTo}/${characterId}`);
       router.refresh();
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : ui.characters.form.saveFailed);

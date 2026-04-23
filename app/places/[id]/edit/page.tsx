@@ -34,7 +34,7 @@ export default async function EditPlacePage({ params }: PageProps) {
       <PlaceForm
         mode="edit"
         endpoint={`/api/places/${place.id}`}
-        redirectTo={(entityId) => `/places/${entityId}`}
+        redirectTo="/places"
         initialValues={{
           name: place.name,
           slug: place.slug,

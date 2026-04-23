@@ -14,7 +14,7 @@ export default function NewCharacterPage() {
         description={ui.characters.newDescription}
         actions={<Link href="/characters" className="button-link">{ui.common.backToList}</Link>}
       />
-      <CharacterForm mode="create" endpoint="/api/characters" redirectTo={(id) => `/characters/${id}`} />
+      <CharacterForm mode="create" endpoint="/api/characters" redirectTo="/characters" />
     </PageContainer>
   );
 }

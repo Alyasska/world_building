@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { mapCreateSchema, mapIdSchema, mapUpdateSchema } from '@/schemas/map';
 import { resolveMapSlug } from './slug';
+import { toJsonWrite } from '@/lib/prisma-json';
 
 const mapListSelect = {
   id: true,
@@ -84,12 +85,12 @@ export async function updateMap(id: string, input: unknown): Promise<MapRecord |
       slug: nextSlug,
       summary: parsed.summary === undefined ? existing.summary : parsed.summary,
       content: parsed.content === undefined
-        ? existing.content
+        ? toJsonWrite(existing.content)
         : (parsed.content as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
       status: parsed.status ?? existing.status,
       canonState: parsed.canonState ?? existing.canonState,
       metadata: parsed.metadata === undefined
-        ? existing.metadata
+        ? toJsonWrite(existing.metadata)
         : (parsed.metadata as Prisma.InputJsonValue | undefined),
       mapKind: parsed.mapKind === undefined ? existing.mapKind : parsed.mapKind,
       defaultLayerKey: parsed.defaultLayerKey ?? existing.defaultLayerKey,

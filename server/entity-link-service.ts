@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { entityLinkCreateSchema, entityLinkDeleteSchema, entityTypeSchema } from '@/schemas/link';
 import { getCharacter } from './character-service';
@@ -108,7 +109,7 @@ export async function createEntityLink(input: unknown) {
       isBidirectional: parsed.isBidirectional ?? true,
       status: parsed.status ?? 'active',
       canonState: parsed.canonState ?? 'canonical',
-      metadata: parsed.metadata,
+      metadata: parsed.metadata as Prisma.InputJsonValue | undefined,
     },
     select: entityLinkSelect,
   });

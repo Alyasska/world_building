@@ -34,7 +34,7 @@ type StoryPlaceOption = {
 type StoryFormProps = {
   mode: 'create' | 'edit';
   endpoint: string;
-  redirectTo: (id: string) => string;
+  redirectTo: string;
   initialValues?: Partial<StoryFormValues>;
   placeOptions: StoryPlaceOption[];
 };
@@ -116,7 +116,7 @@ export function StoryForm({ mode, endpoint, redirectTo, initialValues, placeOpti
         throw new Error(ui.stories.form.invalidResponse);
       }
 
-      router.push(redirectTo(storyId));
+      router.push(`${redirectTo}/${storyId}`);
       router.refresh();
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : ui.stories.form.saveFailed);

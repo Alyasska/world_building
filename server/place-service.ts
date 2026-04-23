@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { placeCreateSchema, placeIdSchema, placeUpdateSchema } from '@/schemas/place';
 import { resolvePlaceSlug } from './slug';
+import { toJsonWrite } from '@/lib/prisma-json';
 
 const placeHierarchyNodeSelect = {
   id: true,
@@ -118,7 +119,7 @@ async function validatePlaceParent(parentPlaceId: string | null | undefined, cur
       throw new PlaceHierarchyError('A place cannot be moved inside its own child hierarchy');
     }
 
-    const nextParent = await prisma.place.findFirst({
+    const nextParent: { parentPlaceId: string | null } | null = await prisma.place.findFirst({
       where: { id: currentParentId, deletedAt: null },
       select: { parentPlaceId: true },
     });
@@ -218,27 +219,25 @@ export async function updatePlace(id: string, input: unknown): Promise<PlaceReco
   await validatePlaceParent(nextParentPlaceId, id);
   const nextSlug = parsed.slug ? await resolvePlaceSlug(parsed.name ?? existing.name, parsed.slug, id) : existing.slug;
 
-  const updated = await prisma.place.update({
+  await prisma.place.update({
     where: { id },
     data: {
       name: parsed.name ?? existing.name,
       slug: nextSlug,
       summary: parsed.summary === undefined ? existing.summary : parsed.summary,
-      content: parsed.content === undefined ? existing.content : (parsed.content as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
+      content: parsed.content === undefined ? toJsonWrite(existing.content) : (parsed.content as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
       status: parsed.status ?? existing.status,
       canonState: parsed.canonState ?? existing.canonState,
-      metadata: parsed.metadata === undefined ? existing.metadata : (parsed.metadata as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
+      metadata: parsed.metadata === undefined ? toJsonWrite(existing.metadata) : (parsed.metadata as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
       placeScale: parsed.placeScale ?? existing.placeScale,
       placeKind: parsed.placeKind === undefined ? existing.placeKind : parsed.placeKind,
       parentPlaceId: nextParentPlaceId ?? null,
       locationText: parsed.locationText === undefined ? existing.locationText : parsed.locationText,
-      aliases: parsed.aliases === undefined ? existing.aliases : (parsed.aliases as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
+      aliases: parsed.aliases === undefined ? toJsonWrite(existing.aliases) : (parsed.aliases as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
     },
-    select: placeDetailSelect,
   });
 
-  const lineage = await resolvePlaceLineage(updated.parentPlaceId);
-  return { ...updated, lineage };
+  return getPlace(id);
 }
 
 export async function deletePlace(id: string): Promise<PlaceRecord | null> {

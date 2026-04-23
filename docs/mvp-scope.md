@@ -1,35 +1,52 @@
 # Current Scope
 
-This document describes the real working slice at the end of Phase 1, not the full long-term dream scope.
+Last updated: 2026-04-23. Reflects the real working slice after Phase 3.
 
-## Real Current Foundation
+## Real Current State
+
 - Single-user private worldbuilding app.
-- Full-stack TypeScript with Next.js App Router, React, Prisma, and PostgreSQL.
-- Working runtime shell with Dashboard, Characters, Places, Tags, Character↔Place links, and simple Search.
-- Centralized UI strings with Russian-first defaults and an English fallback path.
-- Structured relational records kept separate from flexible `content`/metadata fields.
-- Soft-delete, status, and canon-state handling for active runtime entities.
-- Temporary GitHub Pages preview surface for UX inspection only.
+- Full-stack TypeScript: Next.js App Router, React, Prisma, PostgreSQL.
+- Full Prisma schema migrated and live. All core narrative entities have service + API layers.
+- Working CRUD for: Character, Place, Story, Event, Tag.
+- Cross-entity features: EntityLink manager, EventParticipant manager, Place chronology, global search.
+- Static SVG map viewer linked to Place records (read-only, no editor yet).
+- Russian-first i18n (`lib/i18n/ui.ts`) with English fallback.
+- Soft-delete, status, and canon-state on all entities by design.
+- Vercel deployment ready (postinstall prisma generate, migration SQL tracked).
 
-## Foundation Still Present But Not Active UI
-- Broader Prisma/domain scaffolding for Story, Event, Faction, LoreEntry, RuleSystem, Asset, Tag, and MapRegion.
-- Relation rules and map-model notes that inform later phases.
-- Export/import and extended map ideas as forward-looking documentation, not active product behavior.
+## Schema Present But No UI Yet
+
+- Faction, LoreEntry, RuleSystem — modeled, migrated, no CRUD pages.
+- Asset — modeled, migrated, no upload/storage logic.
+- PlaceConnection — modeled, migrated, no UI.
+- CharacterRelation — modeled, migrated, no UI.
+- StoryEntity — modeled, migrated, service scaffold reserved.
+- MapRegion editor — viewer only, no drawing or region creation in UI.
 
 ## Not In The Current Working Slice
-- Story CRUD and story-centered navigation.
-- Map rendering, region CRUD, overlays, or clickable world navigation.
-- Dedicated place hierarchy UX.
-- Timeline, graph, export/import, or procedural systems.
-- Multi-user collaboration, permissions, or comments.
-- AI-assisted canon generation or autonomous content creation.
 
-## Phase 2 Preparation Direction
-- Place becomes the backbone entity for geographic organization.
-- Hierarchy such as continent -> region -> country -> city -> village -> district should grow from `Place`, not from temporary UI assumptions.
-- Map-first navigation should remain data-driven: map regions point to place records rather than replacing them.
+- Faction / LoreEntry / RuleSystem / Asset CRUD pages.
+- Place connection UI (route and travel data between places).
+- Character relation UI (typed character-to-character links).
+- Map region creation or editing tools.
+- Map layers (topographic, political, narrative overlays).
+- Timeline, graph, or relational visualization views.
+- Export/import (JSON, Markdown, portability layer).
+- Multi-user, auth, permissions, comments.
+- AI-assisted canon generation.
+
+## Phase 4 Target Direction
+
+- Faction CRUD as the next vertical slice (mirrors Character pattern).
+- LoreEntry CRUD (knowledge base / encyclopedia entries).
+- Place connections UI (distance, travel time, connection type).
+- Map region editor (add/edit point, rect, polygon regions on a map).
+- Possibly: Character relations UI and character-to-character graph surface.
 
 ## Boundary Rules
-- Preserve the stable domain model and reusable patterns before adding new surface area.
-- Avoid exposing implementation details such as slug as the primary user-facing concept.
-- Prefer incremental vertical slices over broad speculative feature branches.
+
+- Preserve stable domain model and reusable patterns before adding surface area.
+- Place is the canonical location entity — hierarchy grows from `parentPlaceId`.
+- Map regions point into Place records; maps are navigation, not data.
+- Prefer incremental vertical slices over broad speculative branches.
+- Do not expose `slug` as a primary user-facing concept.

@@ -34,7 +34,7 @@ export default async function EditEventPage({ params }: PageProps) {
       <EventForm
         mode="edit"
         endpoint={`/api/events/${event.id}`}
-        redirectTo={(entityId) => `/events/${entityId}`}
+        redirectTo="/events"
         initialValues={{
           title: event.title,
           slug: event.slug,

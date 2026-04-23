@@ -1,4 +1,4 @@
-﻿-- CreateEnum
+-- CreateEnum
 CREATE TYPE "EntityStatus" AS ENUM ('draft', 'active', 'archived');
 
 -- CreateEnum

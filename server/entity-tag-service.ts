@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { entityTagCreateSchema, entityTagDeleteSchema, entityTypeSchema } from '@/schemas/link';
 import { getCharacter } from './character-service';
@@ -90,7 +91,7 @@ export async function createEntityTag(input: unknown) {
       context: parsed.context ?? null,
       status: parsed.status ?? 'draft',
       canonState: parsed.canonState ?? 'canonical',
-      metadata: parsed.metadata,
+      metadata: parsed.metadata as Prisma.InputJsonValue | undefined,
     },
     select: entityTagSelect,
   });

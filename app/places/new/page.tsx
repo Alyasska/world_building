@@ -17,7 +17,7 @@ export default async function NewPlacePage() {
         description={ui.places.newDescription}
         actions={<Link href="/places" className="button-link">{ui.common.backToList}</Link>}
       />
-      <PlaceForm mode="create" endpoint="/api/places" redirectTo={(id) => `/places/${id}`} parentOptions={parentOptions} />
+      <PlaceForm mode="create" endpoint="/api/places" redirectTo="/places" parentOptions={parentOptions} />
     </PageContainer>
   );
 }

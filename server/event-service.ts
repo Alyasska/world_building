@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { eventCreateSchema, eventIdSchema, eventUpdateSchema } from '@/schemas/event';
 import { resolveEventSlug } from './slug';
+import { toJsonWrite } from '@/lib/prisma-json';
 
 const placeReferenceSelect = {
   id: true,
@@ -178,16 +179,16 @@ export async function updateEvent(id: string, input: unknown): Promise<EventReco
     ? await resolveEventSlug(parsed.title ?? existing.title, parsed.slug, id)
     : existing.slug;
 
-  return prisma.event.update({
+  await prisma.event.update({
     where: { id },
     data: {
       title: parsed.title ?? existing.title,
       slug: nextSlug,
       summary: parsed.summary === undefined ? existing.summary : parsed.summary,
-      content: parsed.content === undefined ? existing.content : (parsed.content as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
+      content: parsed.content === undefined ? toJsonWrite(existing.content) : (parsed.content as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
       status: parsed.status ?? existing.status,
       canonState: parsed.canonState ?? existing.canonState,
-      metadata: parsed.metadata === undefined ? existing.metadata : (parsed.metadata as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
+      metadata: parsed.metadata === undefined ? toJsonWrite(existing.metadata) : (parsed.metadata as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
       storyId: nextStoryId ?? null,
       placeId: nextPlaceId,
       eventDateText: parsed.eventDateText === undefined ? existing.eventDateText : parsed.eventDateText,
@@ -195,8 +196,9 @@ export async function updateEvent(id: string, input: unknown): Promise<EventReco
       endAt: parsed.endAt === undefined ? existing.endAt : parseOptionalDate(parsed.endAt),
       datePrecision: parsed.datePrecision ?? existing.datePrecision,
     },
-    select: eventSelect,
   });
+
+  return getEvent(id);
 }
 
 export async function deleteEvent(id: string): Promise<EventRecord | null> {

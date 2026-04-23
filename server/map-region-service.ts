@@ -11,6 +11,7 @@ import { uuidSchema } from '@/schemas/shared';
 import { geometrySchemaForType } from '@/lib/map-geometry';
 import type { MapGeometryType } from '@/lib/map-geometry';
 import { resolveMapRegionSlug } from './slug';
+import { toJsonWrite } from '@/lib/prisma-json';
 
 const placeReferenceSelect = {
   id: true,
@@ -155,33 +156,34 @@ export async function updateMapRegion(id: string, input: unknown): Promise<MapRe
     ? await resolveMapRegionSlug(parsed.name ?? existing.name, parsed.slug, id)
     : existing.slug;
 
-  return prisma.mapRegion.update({
+  await prisma.mapRegion.update({
     where: { id },
     data: {
       name: parsed.name ?? existing.name,
       slug: nextSlug,
       summary: parsed.summary === undefined ? existing.summary : parsed.summary,
       content: parsed.content === undefined
-        ? existing.content
+        ? toJsonWrite(existing.content)
         : (parsed.content as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
       status: parsed.status ?? existing.status,
       canonState: parsed.canonState ?? existing.canonState,
       metadata: parsed.metadata === undefined
-        ? existing.metadata
+        ? toJsonWrite(existing.metadata)
         : (parsed.metadata as Prisma.InputJsonValue | undefined),
       placeId: parsed.placeId === undefined ? existing.placeId : parsed.placeId,
       layerKey: parsed.layerKey ?? existing.layerKey,
       geometryType: parsed.geometryType ?? existing.geometryType,
       geometry: parsed.geometry === undefined
-        ? existing.geometry
+        ? (existing.geometry as Prisma.InputJsonValue)
         : (parsed.geometry as Prisma.InputJsonValue),
       labelPoint: parsed.labelPoint === undefined
-        ? existing.labelPoint
+        ? toJsonWrite(existing.labelPoint)
         : (parsed.labelPoint as Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput),
       displayOrder: parsed.displayOrder ?? existing.displayOrder,
     },
-    select: mapRegionSelect,
   });
+
+  return getMapRegion(id);
 }
 
 export async function deleteMapRegion(id: string): Promise<MapRegionRecord | null> {

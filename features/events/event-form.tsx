@@ -42,7 +42,7 @@ type EventStoryOption = {
 type EventFormProps = {
   mode: 'create' | 'edit';
   endpoint: string;
-  redirectTo: (id: string) => string;
+  redirectTo: string;
   initialValues?: Partial<EventFormValues>;
   placeOptions: EventPlaceOption[];
   storyOptions: EventStoryOption[];
@@ -140,7 +140,7 @@ export function EventForm({ mode, endpoint, redirectTo, initialValues, placeOpti
         throw new Error(ui.events.form.invalidResponse);
       }
 
-      router.push(redirectTo(eventId));
+      router.push(`${redirectTo}/${eventId}`);
       router.refresh();
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : ui.events.form.saveFailed);

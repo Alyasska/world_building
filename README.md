@@ -2,25 +2,99 @@
 
 Private long-term worldbuilding system built with Next.js App Router, React, Prisma, and PostgreSQL.
 
-## What Is Current
-- The real application lives in `app/`, `server/`, `schemas/`, `features/`, `components/`, `lib/`, and `prisma/`.
-- The active working slice is Phase 1 foundation: Dashboard, Characters, Places, Tags, basic Character<->Place links, and Search.
-- UI text is centralized in `lib/i18n/ui.ts` with Russian-first defaults and English fallback.
+## Current Stage — Phase 3 Complete (Map Viewer + Full Entity CRUD)
 
-## What Is Temporary
-- `pages-preview/` is a static GitHub Pages surface used only for visual UX review when local runtime constraints make browser verification harder.
-- It is intentionally mock-driven and should not be treated as the source of truth for backend behavior or architecture.
+As of 2026-04-23 the app has a working full-stack runtime with CRUD for all primary narrative entities, a relational data model fully migrated in PostgreSQL, and a static visual map viewer.
 
-## Architectural Direction
-- Structured relational data stays separate from flexible long-form `content`.
-- `Place` is the canonical location entity.
-- Map-facing systems are meant to point into place data rather than replace it.
-- Phase 2 is expected to shift the product toward a Place-first, map-first navigation model.
+### What Is Working
 
-## Useful Starting Points
+**Entities with full CRUD UI + API:**
+- Characters (aliases, pronouns, epithet, birth/death dates, status, canon state)
+- Places (scale, kind, parent-place hierarchy, location text, aliases)
+- Stories (kind, primary place, date range, story entities)
+- Events (date text + ISO precision, place, story, participants)
+- Tags (color, namespace, tag manager UI on every entity)
+
+**Cross-cutting features:**
+- EntityLink manager — attach any entity to any other with a typed relation
+- EventParticipant manager — attach Characters/Factions/etc. to Events with roles and sequence
+- Place chronology — timeline of events that occurred at a place
+- Global search across all entity types (`/search`)
+- World Explorer component (relationship graph surface — scaffolded)
+- Maps list + static SVG map viewer (`/maps`, `/maps/[id]`)
+  - Point, Rect, Polygon geometry rendered in a 1000×1000 coordinate space
+  - Clicking a region shows a detail panel with a link to the Place record
+- Russian-first i18n with English fallback (`lib/i18n/ui.ts`)
+- Soft-delete, status (draft/active/archived), and canon-state on all entities
+
+**Infrastructure:**
+- Full Prisma schema with PostgreSQL migration (`prisma/migrations/20260423000000_init/migration.sql`)
+- `postinstall` hook runs `prisma generate` for Vercel deployments
+- Zod schemas for all API inputs (`schemas/`)
+- Service layer cleanly separated from route handlers (`server/`)
+
+### Schema Models
+
+| Model | UI | Service | API |
+|---|---|---|---|
+| Character | ✅ | ✅ | ✅ |
+| Place | ✅ | ✅ | ✅ |
+| Story | ✅ | ✅ | ✅ |
+| Event | ✅ | ✅ | ✅ |
+| Tag | ✅ | ✅ | ✅ |
+| Map | List only | ✅ | ✅ |
+| MapRegion | Viewer only | ✅ | ✅ |
+| EntityLink | Manager UI | ✅ | ✅ |
+| EventParticipant | Manager UI | ✅ | ✅ |
+| PlaceConnection | Schema only | — | — |
+| CharacterRelation | Schema only | — | — |
+| StoryEntity | Schema only | — | — |
+| Faction | Schema only | — | — |
+| LoreEntry | Schema only | — | — |
+| RuleSystem | Schema only | — | — |
+| Asset | Schema only | — | — |
+
+### What Is Not Yet Built
+
+- Faction, LoreEntry, RuleSystem, Asset CRUD
+- Place connection UI (route between places)
+- Character relation UI (character-to-character typed links)
+- Map region editor / drawing tools (viewer is read-only)
+- Map layers (topographic, political, narrative overlays)
+- Timeline / graph views
+- Export/import (JSON, Markdown)
+- Multi-user, auth, permissions
+
+### Architectural Direction
+
+- `Place` is the canonical location entity. Hierarchy grows from `parentPlaceId`, not from a separate table.
+- Map regions point into Place records — maps are a navigation surface, not a data replacement.
+- Structured relational fields stay separate from flexible `content` (Json) fields.
+- Every entity has `status`, `canonState`, `deletedAt` — designed for draft states and alternate canon from the start.
+- Phase 4 target: Faction + LoreEntry CRUD, Place connections UI, and map region editor.
+
+## Project Layout
+
+```
+app/            Next.js App Router pages and API routes
+server/         Service layer (business logic, Prisma queries)
+features/       Form components per entity
+components/     Shared UI components (map-viewer, site-nav, world-explorer, ui/*)
+schemas/        Zod validation schemas
+lib/            Utilities (i18n, form helpers, geometry, place-scale, event-date-precision)
+prisma/         Schema + migrations
+docs/           Architecture and design notes
+pages-preview/  Static GitHub Pages UX preview (mock-driven, not source of truth)
+```
+
+## Useful Entry Points
+
 - Runtime shell: `app/layout.tsx`
 - Dashboard: `app/page.tsx`
-- Character slice: `app/characters`, `features/characters`, `server/character-service.ts`
-- Place slice: `app/places`, `features/places`, `server/place-service.ts`
-- Preview layer: `pages-preview/`
-- Scope and structure notes: `docs/`
+- Character slice: `app/characters/`, `features/characters/`, `server/character-service.ts`
+- Place slice: `app/places/`, `features/places/`, `server/place-service.ts`
+- Story slice: `app/stories/`, `features/stories/`, `server/story-service.ts`
+- Event slice: `app/events/`, `features/events/`, `server/event-service.ts`
+- Map viewer: `components/map-viewer.tsx`, `app/maps/`
+- i18n: `lib/i18n/ui.ts`
+- Docs: `docs/`
