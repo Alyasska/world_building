@@ -1,0 +1,189 @@
+# World Engine - Revised Vision & Product-First Roadmap
+
+## Working Note
+
+This file is the active product-direction document.
+
+The original `vision.txt` stays in the project as the historical numbered roadmap so
+existing progress is not lost. The old work is still valid, but it is now treated as
+foundation rather than as the product goal by itself.
+
+---
+
+## Core Vision
+
+World Engine is a private, long-term, map-first worldbuilding system. It is not meant
+to feel like a generic admin panel with fantasy data inside it. It should feel like a
+real world atlas and narrative workspace: the map is the main canvas, places are the
+main entry point into the world, events are the atomic units of history, stories are
+higher-level narrative groupings, and characters, factions, lore, and systems are
+attached into that structure in meaningful ways.
+
+The system already has a large amount of backend and entity infrastructure. That work
+is not wasted. It becomes the foundation we build on, but it is no longer the product
+goal by itself. From now on, progress is measured by whether the hosted app looks,
+feels, and behaves more like the intended world engine, not by how many support layers
+or CRUD surfaces exist.
+
+## Product Principles
+
+We own the schema, the relations, the meaning of the data, and the final product
+experience. Open-source projects remain infrastructure layers that can be adopted,
+adapted, or replaced without defining the product.
+
+The world must be stored as structured relational data, but the user experience must
+not expose that structure as dry database administration. Structure exists to support
+immersion, navigation, chronology, and story composition.
+
+Design is not a final polish phase. In this project, design is part of architecture.
+The app shell, map behavior, page rhythm, typography, density of information, and
+reveal patterns are core product decisions.
+
+Place remains the backbone. The user should be able to enter the world through
+geography first, then move naturally into stories, events, people, factions, and lore
+from there.
+
+The product is Russian-first, but localization must stay organized and extensible.
+Slugs remain stable identifiers and are not UI translation content. Human-facing names
+and labels are localized; structural identifiers remain stable.
+
+## Current Foundation We Keep
+
+The following is already valuable and should be treated as the foundation rather than
+as the end product: the Prisma relational schema for core entities and linking tables;
+CRUD, services, validation, and route patterns for all major entity types; status,
+canon state, soft-delete, metadata, and partial date support; tag and entity-link
+systems; event participants, story entities, place connections, and character
+relations; authentication and route protection; Russian-first localization groundwork;
+and the initial map, search, and editor seams.
+
+This means the project no longer needs to focus on proving it can store world data.
+That part is largely done. The next work must focus on turning this stored world data
+into a coherent, map-dominant experience.
+
+## Strategic Reset
+
+The roadmap changes from infrastructure-first to experience-first.
+
+The main goal now is to transform the existing app from a broad CRUD foundation into a
+strong world-engine shell. The first screen must already communicate the intended
+product: a dominant map, atmospheric but controlled visual language, layered
+information reveal, and a clear sense that the world is explored rather than
+administrated.
+
+That means immersive UI, shell design, map-centered navigation, and narrative
+presentation move from late polish into the immediate next priority.
+
+## New Roadmap
+
+### Phase A - Product Reset on Top of Existing Foundation
+
+Reframe the current codebase as a world-engine foundation, not as the target UX.
+Replace the generic app feeling with a coherent global shell built around atlas
+navigation.
+Make the map the default home experience, not just one page among many.
+Define the permanent reveal pattern: empty atlas state, selected place state, deep
+detail state.
+Reduce admin-panel noise by hiding or demoting low-value controls from primary views.
+Establish design primitives now, not later: spacing, panel language, typography,
+cold-tone palette, icon treatment, and navigation behavior.
+Make the app feel atmospheric and serious at the same time: not game UI, not office
+CRUD UI, but a worldbuilding instrument.
+
+### Phase B - Map-First World Experience
+
+Turn the current world explorer into the real primary entry point.
+Make place selection open a rich side panel or layered detail view instead of feeling
+like a detached CRUD jump.
+Use Place as the central navigation node for stories, events, characters, factions,
+lore, and assets.
+Improve the current static map surface so it already feels intentional even before
+MapLibre replacement.
+Add stronger region labeling, hover states, focus states, and place-context
+presentation.
+Make backing out from a detail state return the user to a clean, atmospheric atlas
+state.
+Ensure the map visually dominates the product.
+
+### Phase C - Narrative and Lore Presentation
+
+Turn place pages into real world pages rather than database records.
+Present chronology as a readable history layer tied to place and story context.
+Surface linked stories, events, characters, factions, and lore in a deliberate
+narrative order.
+Make summaries and rich text blocks feel like lore panels rather than form leftovers.
+Rework detail layouts so dense text is welcome when opened, but never overwhelms the
+atlas state.
+Use the existing relational model to support discovery rather than exposing technical
+relation widgets too directly.
+
+### Phase D - Editing Experience and Authoring Quality
+
+Introduce Tiptap as part of a better writing experience, not just as a technical
+content-field upgrade.
+Improve create/edit flows so authoring feels integrated with the world shell.
+Keep structured fields and prose clearly separated, but visually unified.
+Simplify entity forms where possible and stop treating every field equally in the UI.
+Make editing feel like shaping the world, not filling database forms.
+
+### Phase E - Search, Discovery, and World Navigation
+
+Upgrade search from a utility page into a world-discovery tool integrated into the
+shell.
+Complete Meilisearch only when it improves the actual product experience.
+Support searching by names, aliases, places, story context, and linked entities in a
+way that feels exploratory.
+Improve cross-entity navigation so every page strengthens the sense of one connected
+world.
+Re-evaluate the world explorer graph only if it supports comprehension better than the
+map and narrative views.
+
+### Phase F - Spatial Evolution
+
+Replace the temporary SVG map layer with MapLibre GL JS when the shell and interaction
+model are already correct.
+Add region editing and drawing tools only after the map experience itself is strong.
+Add political overlays, narrative overlays, and relational overlays as optional lenses
+on the same world.
+Introduce topographic and elevation-aware modes only if they strengthen the world
+model and atmosphere.
+Treat procedural map generation as an advanced world-expansion tool, not as a
+distraction from the core app.
+
+### Phase G - Higher-Order World Visualization
+
+Add full timeline views only when chronology is already strong in place and story
+views.
+Add event-chain visualizations where stories genuinely benefit from them.
+Add systems and rules visualizations only if RuleSystem content becomes deep enough to
+justify them.
+Add graph views as complementary views, not as replacements for the map-first
+philosophy.
+
+### Phase H - Portability and Long-Term Ownership
+
+Add JSON export of all structured world data.
+Add Markdown export of entities and relations in a readable archival format.
+Add import workflows only after export structure is stable.
+Preserve strict separation between data design and visual design so redesigns never
+threaten world data.
+Consider multi-user and permissions only when the single-user authoring experience is
+truly solid.
+
+## Technical Stack Direction
+
+Primary stack remains Next.js App Router with full-stack TypeScript, PostgreSQL via
+Prisma, Auth.js, next-intl, Meilisearch, Tiptap, and MapLibre GL JS, with React Flow
+optional rather than central.
+
+However, the order of adoption is now governed by product value, not by infrastructure
+completion. A tool is only next if it makes the world experience better in the hosted
+app.
+
+## Success Criterion
+
+The project is successful in the next stage when opening the hosted app no longer
+feels like entering a scaffolded CRUD system. It should immediately feel like entering
+a world: a dominant map, a strong atmospheric shell, clear geographic navigation, rich
+place-centered detail reveal, and a visible sense that all current relational progress
+is serving one coherent experience.

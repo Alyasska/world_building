@@ -1,0 +1,286 @@
+# World Engine - Wanted UI Direction
+
+## Working Note
+
+This file is the UI north-star for the next stage of the project.
+
+It complements `vision_revised.txt`. That file defines product direction and roadmap.
+This file defines the intended interface mood, shell, layout, and interaction model.
+
+The React mockup that inspired this document is a visual reference, not a requirement
+to copy literally. The goal is to preserve the experience direction while allowing the
+real app to evolve with the actual data model and codebase.
+
+---
+
+## Core UI Intent
+
+World Engine should feel like entering an atlas, archive, and narrative instrument at
+the same time. It must not feel like a generic CRUD dashboard, an office admin panel,
+or a game HUD.
+
+The interface should communicate three things immediately:
+
+1. The map is the main canvas.
+2. The world is explored through layered reveal.
+3. Structured data exists in service of atmosphere, clarity, and discovery.
+
+The UI should feel cold, serious, archival, and immersive. It should be visually
+controlled rather than loud. The experience should invite slow reading, orientation,
+and connection-making.
+
+## Experience Model
+
+The product should behave like a layered world workspace with three main states:
+
+1. Atlas state
+The user sees the world map as the dominant surface, with minimal chrome and strong
+spatial focus.
+
+2. Selected entity state
+Selecting a place or other mapped entity opens contextual detail without breaking the
+sense of being on the atlas.
+
+3. Deep detail state
+The user can read lore, inspect structured metadata, and follow connections in a
+focused side panel or layered detail surface.
+
+Backing out of detail should feel calm and reversible. The user should return to the
+map, not to a disconnected list page.
+
+## Visual Direction
+
+The interface should use a dark atlas palette:
+
+- Near-black, charcoal, slate, and deep iron tones for the background
+- Warm muted brass or antique gold as the accent
+- Soft parchment or ivory for primary reading text
+- Dusty desaturated secondary colors for metadata and support states
+
+Surfaces should feel like floating glass or smoked archival panels:
+
+- Semi-transparent dark panels
+- Soft blur
+- Thin quiet borders
+- Deep ambient shadows
+- Rounded corners without looking playful
+
+Typography should support two roles:
+
+- A clean UI typeface for controls, metadata, search, and navigation
+- A literary serif for titles, place names, and longer lore passages
+
+The overall tone should feel elegant, restrained, and intentional.
+
+## Global Shell
+
+The shell should be built from floating interface islands over the map.
+
+Expected shell elements:
+
+- A left vertical navigation rail for major world modes
+- A top-left command/search bar with lightweight context or breadcrumb behavior
+- A top-right language/profile utility cluster
+- Bottom-right map controls for zoom, orientation, and layers
+- A right-side inspector panel for the currently selected entity
+
+These shell elements should feel secondary to the map, not equal in dominance.
+
+## Map Surface
+
+The map must visually dominate the entire product.
+
+Even before full MapLibre adoption, the temporary map surface should feel deliberate:
+
+- Full-screen canvas
+- Atmospheric background treatment
+- Strong sense of spatial openness
+- Hoverable and selectable markers or regions
+- Clear focus state for the selected location
+- Smooth transitions when centering or opening detail
+
+The map is not decoration behind panels. It is the primary workspace.
+
+## Map Markers and Selection
+
+Mapped entities should be represented with deliberate markers rather than generic pins.
+
+Desired behavior:
+
+- Markers should feel precise, archival, and slightly symbolic
+- Hovering a marker reveals a compact tooltip with type and name
+- Selecting a marker highlights it clearly and opens detail
+- Empty-map click should deselect and return to atlas state
+- Selecting an entity may gently pan or focus the map toward that entity
+
+The selected marker should glow or intensify subtly through accent color, contrast, or
+shadow rather than loud animation.
+
+## Inspector Panel
+
+The right-side panel is the deep-work zone.
+
+It should slide or reveal smoothly and feel like an archival drawer or field dossier,
+not a generic sidebar. It should support long-form reading, structured facts, and
+cross-entity navigation.
+
+Expected inspector structure:
+
+- Type eyebrow
+- Large title
+- Small action row
+- Tab navigation
+- Scrollable content area
+- Close control
+
+The panel should support at least three content modes:
+
+1. Lore
+Long-form prose, summaries, descriptive text, and narrative reading.
+
+2. Datacore
+Structured properties, status, dates, tags, and canonical metadata.
+
+3. Connections
+Linked characters, events, stories, factions, places, and general relations.
+
+The lore view should privilege reading comfort. The datacore view should privilege scan
+clarity. The connections view should privilege navigation and discovery.
+
+## Lore Presentation
+
+Lore should feel like reading from an in-world archive or manuscript panel.
+
+Desired qualities:
+
+- Large readable type
+- Spacious line height
+- Strong contrast without harsh brightness
+- Generous white space
+- Long-form text treated as valuable, not leftover content
+
+Lore must feel welcome in the interface when opened, but it should not overwhelm the
+default atlas view.
+
+## Datacore Presentation
+
+Structured data should be presented as calm, elegant metadata rather than exposed
+database internals.
+
+Desired qualities:
+
+- Clean key/value groupings
+- Compact cards or grid sections
+- Clear labels with quiet hierarchy
+- Tags treated as meaningful badges, not clutter
+- Status and canon information integrated naturally
+
+This view should make the relational structure legible without making the user feel
+like they are operating a back-office system.
+
+## Connections Presentation
+
+Connections should feel like trails through the world.
+
+Desired qualities:
+
+- Separate blocks for characters, chronology, and general links
+- Clickable relation rows
+- Strong hover states
+- Small visual markers to distinguish relation types
+- Support for future jump navigation to connected entities
+
+The goal is to encourage exploration from place to event to character to story without
+breaking the map-first mental model.
+
+## Navigation Character
+
+Navigation should be soft, direct, and layered.
+
+The user should not constantly bounce between unrelated screens. The preferred pattern
+is:
+
+- Explore on the map
+- Select an entity
+- Read and inspect in context
+- Follow a connected entity
+- Return naturally to spatial context
+
+The app should feel like one connected environment rather than many separate tools.
+
+## Search Behavior
+
+Search should live inside the shell as an exploratory command surface.
+
+It should support:
+
+- Names
+- Aliases
+- Places
+- Stories
+- Events
+- Tags
+- Linked entities
+
+Search should feel like entering the archive, not like opening a utility page.
+
+## Controls and Motion
+
+Motion should be restrained and meaningful.
+
+Desired motion language:
+
+- Smooth inspector reveal and hide
+- Gentle tab indicator movement
+- Calm hover transitions
+- Subtle map focus motion on entity open
+- No noisy bounces or game-like effects
+
+Controls should feel precise and premium, with good spacing and deliberate hit areas.
+
+## Design Guardrails
+
+The interface should avoid the following:
+
+- Generic admin-dashboard layouts
+- Dense tables in the primary world experience
+- Equal visual weight for every control
+- Overexposed technical relation widgets
+- Loud fantasy cliches
+- Game UI excess
+- Flat white CRUD forms as the dominant authoring surface
+
+When editing is needed, it should still feel integrated into the world shell.
+
+## Relationship to Current Architecture
+
+This UI direction is compatible with the current backend foundation.
+
+Existing schema, services, validation, links, chronology support, tags, status fields,
+and entity relations should be treated as enabling layers for this experience. The UI
+must interpret that structure into an atlas-first world product.
+
+The goal is not to build new infrastructure for its own sake. The goal is to make the
+existing infrastructure visible through a better shell and stronger interaction design.
+
+## Immediate UI Priorities
+
+The next UI work should prioritize the following:
+
+1. Make the map the true default home surface.
+2. Build the floating shell around the map.
+3. Create the right-side inspector reveal pattern.
+4. Make place selection feel rich and intentional.
+5. Rework place detail into lore, datacore, and connections modes.
+6. Reduce visible CRUD noise in primary views.
+7. Establish permanent design primitives for spacing, typography, color, and panel
+language.
+
+## Success Criterion
+
+The UI is moving in the right direction when opening the app immediately feels like
+entering a world atlas with narrative depth rather than a scaffolded content manager.
+
+The map should dominate. The shell should feel atmospheric and controlled. Detail
+panels should invite reading and discovery. Existing relational data should feel like
+part of one coherent world experience.
