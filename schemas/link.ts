@@ -4,7 +4,7 @@ import { canonStateSchema, entityStatusSchema, uuidSchema } from './shared';
 export const entityTypeSchema = z.enum(['character', 'place']);
 
 export const entityLinkCreateSchema = z.object({
-  sourceEntityType: z.literal('character'),
+  sourceEntityType: entityTypeSchema,
   sourceEntityId: uuidSchema,
   targetEntityType: entityTypeSchema,
   targetEntityId: uuidSchema,

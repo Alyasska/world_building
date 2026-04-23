@@ -35,6 +35,24 @@ enum MapGeometryType {
   polygon
 }
 
+enum PlaceScale {
+  world
+  continent
+  region
+  country
+  province
+  state
+  city
+  town
+  village
+  district
+  landmark
+  building
+  room
+  site
+  other
+}
+
 model Character {
   id            String              @id @default(uuid()) @db.Uuid
   name          String
@@ -60,25 +78,34 @@ model Character {
 }
 
 model Place {
-  id           String             @id @default(uuid()) @db.Uuid
-  name         String
-  slug         String             @unique
-  summary      String?
-  content      Json?
-  status       EntityStatus       @default(draft)
-  canonState   CanonState         @default(canonical)
-  metadata     Json?
-  placeKind    String?
-  locationText String?
-  aliases      Json?
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  deletedAt    DateTime?
+  id            String             @id @default(uuid()) @db.Uuid
+  name          String
+  slug          String             @unique
+  summary       String?
+  content       Json?
+  status        EntityStatus       @default(draft)
+  canonState    CanonState         @default(canonical)
+  metadata      Json?
+  placeScale    PlaceScale         @default(other)
+  placeKind     String?
+  parentPlaceId String?            @db.Uuid
+  locationText  String?
+  aliases       Json?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  deletedAt     DateTime?
 
   fromConnections PlaceConnection[] @relation("PlaceConnectionFrom")
   toConnections   PlaceConnection[] @relation("PlaceConnectionTo")
+  stories         Story[]
+  events          Event[]
+  mapRegions      MapRegion[]
+  parentPlace     Place?            @relation("PlaceHierarchy", fields: [parentPlaceId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  childPlaces     Place[]           @relation("PlaceHierarchy")
 
   @@index([slug])
+  @@index([placeScale])
+  @@index([parentPlaceId])
 }
 
 model Story {
@@ -91,15 +118,19 @@ model Story {
   canonState    CanonState      @default(canonical)
   metadata      Json?
   storyKind     String?
+  primaryPlaceId String?        @db.Uuid
   startDateText String?
   endDateText   String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   deletedAt     DateTime?
 
+  primaryPlace  Place?          @relation(fields: [primaryPlaceId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  events        Event[]
   storyEntities StoryEntity[]
 
   @@index([slug])
+  @@index([primaryPlaceId])
 }
 
 model Event {
@@ -111,17 +142,30 @@ model Event {
   status        EntityStatus    @default(draft)
   canonState    CanonState      @default(canonical)
   metadata      Json?
+  storyId       String?         @db.Uuid
+  placeId       String?         @db.Uuid
+  /// Free-text in-world date label (e.g. "Year 342 of the Third Age"). This is the
+  /// canonical display value for fictional-world events. Always prefer this for UI.
   eventDateText String?
+  /// Structured ISO timestamp for machine sorting and real-calendar overlay.
+  /// Optional and secondary to eventDateText. Null for most fictional-world events.
   startAt       DateTime?
+  /// Structured ISO timestamp — see startAt notes above.
   endAt         DateTime?
+  /// Valid values defined in lib/event-date-precision.ts. Stored as String because
+  /// Prisma enum migrations are heavy; Zod schema enforces the allowed set at runtime.
   datePrecision String?         @default("unknown")
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   deletedAt     DateTime?
 
+  story         Story?          @relation(fields: [storyId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  place         Place?          @relation(fields: [placeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   participants  EventParticipant[]
 
   @@index([slug])
+  @@index([storyId])
+  @@index([placeId])
 }
 
 model Faction {
@@ -200,6 +244,8 @@ model Asset {
   updatedAt  DateTime        @updatedAt
   deletedAt  DateTime?
 
+  assetLinks AssetLink[]
+
   @@index([slug])
   @@index([storageKey])
 }
@@ -219,6 +265,28 @@ model Tag {
   updatedAt  DateTime        @updatedAt
   deletedAt  DateTime?
 
+  entityTags EntityTag[]
+
+  @@index([slug])
+}
+
+model Map {
+  id             String      @id @default(uuid()) @db.Uuid
+  name           String
+  slug           String      @unique
+  summary        String?
+  content        Json?
+  status         EntityStatus @default(draft)
+  canonState     CanonState   @default(canonical)
+  metadata       Json?
+  mapKind        String?
+  defaultLayerKey String      @default("base")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+
+  regions        MapRegion[]
+
   @@index([slug])
 }
 
@@ -231,7 +299,8 @@ model MapRegion {
   status       EntityStatus      @default(draft)
   canonState   CanonState        @default(canonical)
   metadata     Json?
-  mapKey       String            @default("main")
+  mapId        String            @db.Uuid
+  placeId      String?           @db.Uuid
   layerKey     String            @default("base")
   geometryType MapGeometryType
   geometry     Json
@@ -241,8 +310,14 @@ model MapRegion {
   updatedAt    DateTime          @updatedAt
   deletedAt    DateTime?
 
+  map          Map               @relation(fields: [mapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  place        Place?            @relation(fields: [placeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  links        MapRegionLink[]
+
   @@index([slug])
-  @@index([mapKey, layerKey])
+  @@index([mapId])
+  @@index([placeId])
+  @@index([mapId, layerKey])
 }
 
 model CharacterRelation {
@@ -307,6 +382,12 @@ model EventParticipant {
   @@index([participantRole])
 }
 
+/// StoryEntity connects a Story to non-event-based entities: thematic Place anchors,
+/// Faction associations, LoreEntry references, etc.
+/// DO NOT use this to attach Characters to Stories. Characters connect to Stories
+/// through EventParticipant → Event.storyId, which preserves the narrative context
+/// (when and where the character was involved). StoryEntity is for thematic membership
+/// that is not tied to a specific event. Service and API not yet built — reserved scaffold.
 model StoryEntity {
   id           String       @id @default(uuid()) @db.Uuid
   storyId      String       @db.Uuid

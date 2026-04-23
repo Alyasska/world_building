@@ -4,6 +4,9 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { PageContainer } from '@/components/ui/page-container';
 import { SectionHeader } from '@/components/ui/section-header';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { getUiText } from '@/lib/i18n/ui';
+
+const ui = getUiText();
 
 export default async function CharactersPage() {
   const characters = await listCharacters();
@@ -11,22 +14,22 @@ export default async function CharactersPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title="Characters"
-        description="Core people and actors in the world. Create, inspect, and keep the record simple for now."
+        title={ui.characters.title}
+        description={ui.characters.pageDescription}
         actions={
           <Link href="/characters/new" className="button">
-            New Character
+            {ui.characters.new}
           </Link>
         }
       />
 
       {characters.length === 0 ? (
         <EmptyState
-          title="No characters yet"
-          description="Start by creating the first person or actor in the world."
+          title={ui.characters.emptyTitle}
+          description={ui.characters.emptyDescription}
           action={
             <Link href="/characters/new" className="button">
-              Create Character
+              {ui.characters.create}
             </Link>
           }
         />
@@ -42,8 +45,8 @@ export default async function CharactersPage() {
                   <p className="muted">{character.slug}</p>
                 </div>
                 <div className="meta-row">
-                  <StatusBadge value={character.status} />
-                  <StatusBadge value={character.canonState} label={character.canonState} />
+                  <StatusBadge value={character.status} label={ui.status[character.status]} />
+                  <StatusBadge value={character.canonState} label={ui.status[character.canonState]} />
                 </div>
               </div>
               {character.summary ? <p className="list-item__summary">{character.summary}</p> : null}

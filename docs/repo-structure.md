@@ -1,64 +1,38 @@
-# Repo Structure Proposal
+# Repo Structure
+
+This is the current practical structure, not a speculative target tree.
 
 ```text
 .
-  app/
-    api/
-    (routes)/
-  components/
-    ui/
-    shared/
-  features/
-    characters/
-    places/
-    stories/
-    events/
-    factions/
-    lore/
-    rules/
-    assets/
-    tags/
-    map/
-  server/
-    db/
-    queries/
-    mutations/
-    exports/
-    import/
-  schemas/
-    zod/
-    types/
-  lib/
-    dates/
-    ids/
-    slugs/
-    strings/
-    files/
-  prisma/
-  assets/
-    source/
-    icons/
-    maps/
-  exports/
-    samples/
-    backups/
-  docs/
+  app/                Next.js App Router routes and API handlers
+  components/         Reusable UI building blocks
+  features/           Entity-specific forms and slice UI
+  lib/                Pure utilities and localization scaffolding
+  prisma/             Database schema
+  schemas/            Zod validation and shared request contracts
+  server/             Server-side business logic and data access
+  pages-preview/      Temporary GitHub Pages UX inspection layer
+  docs/               Domain and architecture notes
 ```
 
-## Structure Rules
-- `app/` holds route segments and route handlers only.
-- `components/` holds reusable presentational components.
-- `features/` holds domain-specific UI and client/server glue for each entity area.
-- `server/` holds database access, export logic, import logic, and server-only business operations.
-- `schemas/` holds validation schemas and shared type definitions.
-- `lib/` holds pure utilities with no framework dependency.
-- `prisma/` holds the database schema and migration history.
-- `assets/` holds checked-in source assets, not uploaded production files.
-- `exports/` holds sample exports, backup fixtures, and portable snapshots.
-- `docs/` holds the foundational product and schema documents.
+## What Is Real Runtime
+- `app/`, `features/`, `components/`, `server/`, `schemas/`, `lib/`, and `prisma/` are the real application foundation.
+- Characters and Places are the currently stabilized vertical slices.
+- Tags, Character<->Place links, and Search are active supporting features for the current slice.
 
-## Scaling Rules
-- Add new domain features under `features/` instead of growing the route tree into a business-logic dump.
-- Keep database code isolated so UI changes do not ripple into the domain model.
-- Keep schema validation close to the data contracts that use it.
-- Keep map code separate from place code so future overlays stay modular.
+## What Is Temporary
+- `pages-preview/` is not the application runtime.
+- It exists only as a static hosted preview surface when local execution is constrained.
+- Preview code should stay small, coherent, and aligned with active MVP behavior.
+
+## Current Organization Rules
+- Keep route files in `app/` thin; business logic belongs in `server/`.
+- Keep reusable UI in `components/ui/`; keep entity-specific form behavior in `features/`.
+- Keep validation contracts in `schemas/` close to the API/service boundaries that use them.
+- Keep localization text centralized in `lib/i18n/` rather than scattering hardcoded UI copy.
+
+## Phase 2 Direction
+- Do not let the folder layout imply Character is the center of the product.
+- `Place` should be able to grow into the main geographic backbone without reorganizing the whole app again.
+- Future map modules should stay separable from place records: maps are navigation surfaces, places are canonical world records.
+- If place hierarchy grows, prefer adding dedicated place-focused modules instead of leaking hierarchy rules into generic helpers.

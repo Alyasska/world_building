@@ -18,3 +18,15 @@ export function normalizeText(value: string): string | null {
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;
 }
+
+export function toDateInputValue(value: unknown): string {
+  if (value instanceof Date) {
+    return value.toISOString().slice(0, 10);
+  }
+
+  if (typeof value === 'string') {
+    return value.slice(0, 10);
+  }
+
+  return '';
+}

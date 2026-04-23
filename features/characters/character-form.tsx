@@ -6,7 +6,10 @@ import type { FormEvent } from 'react';
 import { FormField } from '@/components/ui/form-field';
 import { SelectField } from '@/components/ui/select-field';
 import { TextareaField } from '@/components/ui/textarea-field';
+import { getUiText } from '@/lib/i18n/ui';
 import { normalizeText, toInputValue, toTextareaValue } from '@/lib/form';
+
+const ui = getUiText();
 
 type CharacterFormValues = {
   name: string;
@@ -25,16 +28,16 @@ type CharacterFormProps = {
 };
 
 const statusOptions = [
-  { label: 'Draft', value: 'draft' },
-  { label: 'Active', value: 'active' },
-  { label: 'Archived', value: 'archived' },
+  { label: ui.status.draft, value: 'draft' },
+  { label: ui.status.active, value: 'active' },
+  { label: ui.status.archived, value: 'archived' },
 ];
 
 const canonOptions = [
-  { label: 'Canonical', value: 'canonical' },
-  { label: 'Alternate', value: 'alternate' },
-  { label: 'Uncertain', value: 'uncertain' },
-  { label: 'Noncanonical', value: 'noncanonical' },
+  { label: ui.status.canonical, value: 'canonical' },
+  { label: ui.status.alternate, value: 'alternate' },
+  { label: ui.status.uncertain, value: 'uncertain' },
+  { label: ui.status.noncanonical, value: 'noncanonical' },
 ];
 
 export function CharacterForm({ mode, endpoint, redirectTo, initialValues }: CharacterFormProps) {
@@ -54,9 +57,23 @@ export function CharacterForm({ mode, endpoint, redirectTo, initialValues }: Cha
     event.preventDefault();
     setError(null);
 
-    if (form.name.trim().length === 0) {
-      setError('Name is required.');
+    const normalizedName = normalizeText(form.name);
+    if (!normalizedName) {
+      setError(ui.characters.form.nameRequired);
       return;
+    }
+
+    const normalizedSlug = normalizeText(form.slug);
+    const payloadBody: Record<string, unknown> = {
+      name: normalizedName,
+      summary: normalizeText(form.summary),
+      content: normalizeText(form.content),
+      status: form.status,
+      canonState: form.canonState,
+    };
+
+    if (normalizedSlug) {
+      payloadBody.slug = normalizedSlug;
     }
 
     setIsSaving(true);
@@ -65,26 +82,24 @@ export function CharacterForm({ mode, endpoint, redirectTo, initialValues }: Cha
       const response = await fetch(endpoint, {
         method: mode === 'create' ? 'POST' : 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: normalizeText(form.name),
-          slug: normalizeText(form.slug),
-          summary: normalizeText(form.summary),
-          content: normalizeText(form.content),
-          status: form.status,
-          canonState: form.canonState,
-        }),
+        body: JSON.stringify(payloadBody),
       });
 
       const payload = await response.json().catch(() => null);
 
-      if (!response.ok) {
-        throw new Error(payload?.error ?? 'Unable to save character');
+      if (!response.ok || payload?.success === false) {
+        throw new Error(payload?.error ?? ui.characters.form.saveFailed);
       }
 
-      router.push(redirectTo(payload.data.id));
+      const characterId = payload?.data?.id;
+      if (typeof characterId !== 'string' || characterId.length === 0) {
+        throw new Error(ui.characters.form.invalidResponse);
+      }
+
+      router.push(redirectTo(characterId));
       router.refresh();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : 'Unable to save character');
+      setError(submitError instanceof Error ? submitError.message : ui.characters.form.saveFailed);
     } finally {
       setIsSaving(false);
     }
@@ -93,22 +108,22 @@ export function CharacterForm({ mode, endpoint, redirectTo, initialValues }: Cha
   return (
     <form className="form-grid" onSubmit={handleSubmit}>
       <div className="form-panel panel">
-        <FormField label="Name" name="name" value={form.name} onChange={(value) => setForm((current) => ({ ...current, name: value }))} required autoComplete="off" />
-        <FormField label="Slug" name="slug" value={form.slug} onChange={(value) => setForm((current) => ({ ...current, slug: value }))} hint="Optional. Leave blank to generate from the name." />
-        <TextareaField label="Summary" name="summary" value={form.summary} onChange={(value) => setForm((current) => ({ ...current, summary: value }))} rows={3} />
+        <FormField label={ui.characters.form.name} name="name" value={form.name} onChange={(value) => setForm((current) => ({ ...current, name: value }))} required autoComplete="off" />
+        <FormField label={ui.characters.form.slug} name="slug" value={form.slug} onChange={(value) => setForm((current) => ({ ...current, slug: value }))} hint={ui.characters.form.slugHint} />
+        <TextareaField label={ui.characters.form.summary} name="summary" value={form.summary} onChange={(value) => setForm((current) => ({ ...current, summary: value }))} rows={3} />
         <TextareaField
-          label="Content"
+          label={ui.characters.form.content}
           name="content"
           value={toTextareaValue(form.content)}
           onChange={(value) => setForm((current) => ({ ...current, content: value }))}
-          hint="Plain text or JSON string is acceptable for now."
+          hint={ui.characters.form.contentHint}
         />
-        <SelectField label="Status" name="status" value={toInputValue(form.status)} options={statusOptions} onChange={(value) => setForm((current) => ({ ...current, status: value }))} />
-        <SelectField label="Canon state" name="canonState" value={toInputValue(form.canonState)} options={canonOptions} onChange={(value) => setForm((current) => ({ ...current, canonState: value }))} />
+        <SelectField label={ui.characters.form.status} name="status" value={toInputValue(form.status)} options={statusOptions} onChange={(value) => setForm((current) => ({ ...current, status: value }))} />
+        <SelectField label={ui.characters.form.canonState} name="canonState" value={toInputValue(form.canonState)} options={canonOptions} onChange={(value) => setForm((current) => ({ ...current, canonState: value }))} />
         {error ? <p className="field__error">{error}</p> : null}
         <div className="actions-row">
           <button type="submit" className="button" disabled={isSaving}>
-            {isSaving ? 'Saving…' : mode === 'create' ? 'Create Character' : 'Save Character'}
+            {isSaving ? ui.common.saving : mode === 'create' ? ui.characters.form.saveCreate : ui.characters.form.saveEdit}
           </button>
         </div>
       </div>

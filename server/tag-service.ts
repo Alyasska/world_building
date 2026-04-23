@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
-import { tagCreateSchema, tagUpdateSchema } from '@/schemas/tag';
+import { tagCreateSchema, tagIdSchema, tagUpdateSchema } from '@/schemas/tag';
 import { resolveTagSlug } from './slug';
 
 const tagSelect = {
@@ -19,8 +19,23 @@ const tagSelect = {
   deletedAt: true,
 } satisfies Prisma.TagSelect;
 
+function isValidTagId(id: string): boolean {
+  return tagIdSchema.safeParse({ id }).success;
+}
+
 export async function listTags() {
   return prisma.tag.findMany({ where: { deletedAt: null }, orderBy: { name: 'asc' }, select: tagSelect });
+}
+
+export async function getTag(id: string) {
+  if (!isValidTagId(id)) {
+    return null;
+  }
+
+  return prisma.tag.findFirst({
+    where: { id, deletedAt: null },
+    select: tagSelect,
+  });
 }
 
 export async function createTag(input: unknown) {
@@ -44,6 +59,8 @@ export async function createTag(input: unknown) {
 }
 
 export async function updateTag(id: string, input: unknown) {
+  if (!isValidTagId(id)) return null;
+
   const existing = await prisma.tag.findFirst({ where: { id, deletedAt: null } });
   if (!existing) return null;
 
@@ -68,6 +85,8 @@ export async function updateTag(id: string, input: unknown) {
 }
 
 export async function deleteTag(id: string) {
+  if (!isValidTagId(id)) return null;
+
   const existing = await prisma.tag.findFirst({ where: { id, deletedAt: null } });
   if (!existing) return null;
 

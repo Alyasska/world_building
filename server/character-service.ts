@@ -1,6 +1,6 @@
-import { Prisma, Character } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
-import { characterCreateSchema, characterUpdateSchema } from '@/schemas/character';
+import { characterCreateSchema, characterIdSchema, characterUpdateSchema } from '@/schemas/character';
 import { resolveCharacterSlug } from './slug';
 
 const characterSelect = {
@@ -24,6 +24,10 @@ const characterSelect = {
 
 export type CharacterRecord = Prisma.CharacterGetPayload<{ select: typeof characterSelect }>;
 
+function isValidCharacterId(id: string): boolean {
+  return characterIdSchema.safeParse({ id }).success;
+}
+
 export async function listCharacters(): Promise<CharacterRecord[]> {
   return prisma.character.findMany({
     where: { deletedAt: null },
@@ -33,6 +37,10 @@ export async function listCharacters(): Promise<CharacterRecord[]> {
 }
 
 export async function getCharacter(id: string): Promise<CharacterRecord | null> {
+  if (!isValidCharacterId(id)) {
+    return null;
+  }
+
   return prisma.character.findFirst({
     where: { id, deletedAt: null },
     select: characterSelect,
@@ -63,6 +71,10 @@ export async function createCharacter(input: unknown): Promise<CharacterRecord> 
 }
 
 export async function updateCharacter(id: string, input: unknown): Promise<CharacterRecord | null> {
+  if (!isValidCharacterId(id)) {
+    return null;
+  }
+
   const existing = await prisma.character.findFirst({ where: { id, deletedAt: null } });
 
   if (!existing) {
@@ -93,15 +105,54 @@ export async function updateCharacter(id: string, input: unknown): Promise<Chara
 }
 
 export async function deleteCharacter(id: string): Promise<CharacterRecord | null> {
+  if (!isValidCharacterId(id)) {
+    return null;
+  }
+
   const existing = await prisma.character.findFirst({ where: { id, deletedAt: null } });
 
   if (!existing) {
     return null;
   }
 
-  return prisma.character.update({
-    where: { id },
-    data: { deletedAt: new Date(), status: 'archived' },
-    select: characterSelect,
+  const now = new Date();
+
+  return prisma.$transaction(async (tx) => {
+    // CharacterRelation uses onDelete:Restrict — must soft-delete before the character row.
+    await tx.characterRelation.updateMany({
+      where: {
+        OR: [{ fromCharacterId: id }, { toCharacterId: id }],
+        deletedAt: null,
+      },
+      data: { deletedAt: now, status: 'archived' },
+    });
+
+    await tx.eventParticipant.updateMany({
+      where: { participantType: 'character', participantId: id, deletedAt: null },
+      data: { deletedAt: now, status: 'archived' },
+    });
+
+    // EntityLink has no FK to Character — clean up orphaned links manually.
+    await tx.entityLink.updateMany({
+      where: {
+        OR: [
+          { fromEntityType: 'character', fromEntityId: id },
+          { toEntityType: 'character', toEntityId: id },
+        ],
+        deletedAt: null,
+      },
+      data: { deletedAt: now, status: 'archived' },
+    });
+
+    await tx.entityTag.updateMany({
+      where: { entityType: 'character', entityId: id, deletedAt: null },
+      data: { deletedAt: now, status: 'archived' },
+    });
+
+    return tx.character.update({
+      where: { id },
+      data: { deletedAt: now, status: 'archived' },
+      select: characterSelect,
+    });
   });
 }

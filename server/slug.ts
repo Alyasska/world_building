@@ -38,3 +38,19 @@ export function resolvePlaceSlug(name: string, providedSlug?: string, excludeId?
 export function resolveTagSlug(name: string, providedSlug?: string, excludeId?: string): Promise<string> {
   return uniqueSlug(prisma.tag, providedSlug ?? name, excludeId);
 }
+
+export function resolveStorySlug(title: string, providedSlug?: string, excludeId?: string): Promise<string> {
+  return uniqueSlug(prisma.story, providedSlug ?? title, excludeId);
+}
+
+export function resolveEventSlug(title: string, providedSlug?: string, excludeId?: string): Promise<string> {
+  return uniqueSlug(prisma.event, providedSlug ?? title, excludeId);
+}
+
+export function resolveMapSlug(name: string, providedSlug?: string, excludeId?: string): Promise<string> {
+  return uniqueSlug(prisma.map, providedSlug ?? name, excludeId);
+}
+
+export function resolveMapRegionSlug(name: string, providedSlug?: string, excludeId?: string): Promise<string> {
+  return uniqueSlug(prisma.mapRegion, providedSlug ?? name, excludeId);
+}

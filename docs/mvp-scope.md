@@ -1,29 +1,35 @@
-# MVP Scope
+# Current Scope
 
-## Included
+This document describes the real working slice at the end of Phase 1, not the full long-term dream scope.
+
+## Real Current Foundation
 - Single-user private worldbuilding app.
-- Full-stack TypeScript with Next.js App Router and PostgreSQL.
-- Core entity management for Character, Place, Story, Event, Faction, LoreEntry, RuleSystem, Asset, Tag, and MapRegion.
-- Create, edit, archive, and soft-delete flows for entities and relations.
-- Structured fields for searchable facts plus rich text content for narrative detail.
-- Tags and explicit entity links.
-- Static world map with clickable regions wired to data, not page-specific code.
-- File-backed media asset storage.
-- JSON export for a single entity and for the full world.
-- Draft, active, and archived content states.
-- Canonical, alternate, and uncertain canon tracking.
+- Full-stack TypeScript with Next.js App Router, React, Prisma, and PostgreSQL.
+- Working runtime shell with Dashboard, Characters, Places, Tags, Character↔Place links, and simple Search.
+- Centralized UI strings with Russian-first defaults and an English fallback path.
+- Structured relational records kept separate from flexible `content`/metadata fields.
+- Soft-delete, status, and canon-state handling for active runtime entities.
+- Temporary GitHub Pages preview surface for UX inspection only.
 
-## Explicitly Out Of Scope
-- Multi-user collaboration, permissions, comments, and approvals.
-- AI-generated canon, AI worldbuilding, or autonomous content creation.
-- Procedural generation of geography, characters, events, or lore.
-- Advanced timeline engines, relationship graph visualizations, and simulation systems.
-- Dynamic terrain rendering, topographic layers, and generated map pipelines.
-- Complex workflow automation, notifications, and external integrations.
-- Import from external apps unless needed later for migration.
-- Mobile-native apps and offline-first sync.
+## Foundation Still Present But Not Active UI
+- Broader Prisma/domain scaffolding for Story, Event, Faction, LoreEntry, RuleSystem, Asset, Tag, and MapRegion.
+- Relation rules and map-model notes that inform later phases.
+- Export/import and extended map ideas as forward-looking documentation, not active product behavior.
 
-## MVP Boundary Rules
-- If a feature changes canon meaning or introduces new relationship semantics, it is not MVP.
-- If a feature requires a new domain entity, relation class, or export shape, it is not MVP unless defined in this foundation.
-- If a feature is only a presentation choice, it stays out of this scope and can evolve later without changing stored data.
+## Not In The Current Working Slice
+- Story CRUD and story-centered navigation.
+- Map rendering, region CRUD, overlays, or clickable world navigation.
+- Dedicated place hierarchy UX.
+- Timeline, graph, export/import, or procedural systems.
+- Multi-user collaboration, permissions, or comments.
+- AI-assisted canon generation or autonomous content creation.
+
+## Phase 2 Preparation Direction
+- Place becomes the backbone entity for geographic organization.
+- Hierarchy such as continent -> region -> country -> city -> village -> district should grow from `Place`, not from temporary UI assumptions.
+- Map-first navigation should remain data-driven: map regions point to place records rather than replacing them.
+
+## Boundary Rules
+- Preserve the stable domain model and reusable patterns before adding new surface area.
+- Avoid exposing implementation details such as slug as the primary user-facing concept.
+- Prefer incremental vertical slices over broad speculative feature branches.
