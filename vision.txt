@@ -1,0 +1,96 @@
+# World Engine — Vision & Numbered Task List
+
+## Architecture Principles
+
+We own the schema, the relations, the meaning of the world data, and the final product
+experience. Open-source Git projects are adopted as replaceable infrastructure layers,
+not as the product itself.
+
+Primary stack: Next.js App Router (full-stack TypeScript), PostgreSQL via Prisma,
+Auth.js, next-intl, Meilisearch, MapLibre GL JS, Tiptap, React Flow (optional).
+
+---
+
+## Phase 1 — Data Foundation
+
+1.  Define Prisma schema: Character, Place, Story, Event, Faction, LoreEntry,
+    RuleSystem, Asset core tables
+2.  Define relational tables: CharacterRelations, EntityLinks, EventParticipants,
+    StoryEntities, PlaceConnections, Tags, EntityTags
+3.  Support optional / partial data: unknown dates, draft states, alternate canon,
+    soft-structured metadata
+4.  Add status, canonState, deletedAt to every entity
+5.  Run initial PostgreSQL migration
+
+## Phase 2 — Core Entity CRUD (Character, Place, Story, Event)
+
+6.  Character CRUD — UI + service + API (aliases, pronouns, epithet, birth/death,
+    status, canon state)
+7.  Place CRUD — UI + service + API (scale, kind, parent-place hierarchy, location
+    text, aliases)
+8.  Story CRUD — UI + service + API (kind, primary place, date range, story entities)
+9.  Event CRUD — UI + service + API (date text + ISO precision, place, story,
+    participants)
+10. Tag manager — CRUD + color + namespace + attach to any entity (EntityTag)
+11. EntityLink manager — bidirectional typed links between any two entities
+12. EventParticipant manager — attach Characters/Factions to Events with roles +
+    sequence
+13. Zod validation schemas for all API inputs
+14. Service layer cleanly separated from route handlers
+
+## Phase 3 — Map Foundation & Cross-Cutting Features
+
+15. Maps list page + static SVG map viewer (/maps, /maps/[id])
+16. Point / Rect / Polygon geometry in a 1000×1000 coordinate space
+17. Clicking a map region shows a detail panel linked to the Place record
+18. Place chronology — timeline of events that occurred at a place
+19. Global search across all entity types (/search)
+20. World Explorer component — relationship graph surface (scaffold)
+21. Russian-first i18n with English fallback via custom getUiText() (lib/i18n/ui.ts)
+22. Soft-delete, status (draft/active/archived), and canon-state on all entities
+
+## Phase 4 — Remaining Entity CRUD
+
+23. Faction CRUD — UI + service + API
+24. LoreEntry CRUD — UI + service + API
+25. RuleSystem CRUD — UI + service + API
+26. Asset CRUD — UI + service + API (file/media references)
+27. PlaceConnection UI — typed route between two Place records
+28. CharacterRelation UI — character-to-character typed links
+29. StoryEntity manager — attach any entity to a Story
+
+## Phase 5 — Infrastructure Integrations
+
+30. Authentication with Auth.js (even if single-user at first)
+31. Route protection and session handling
+32. next-intl — replace custom getUiText() with proper i18n routing (Russian-first,
+    English fallback, extensible to other locales)
+33. Meilisearch — replace Prisma contains search with fast full-text + filtered search
+34. Tiptap — rich text / structured content editor for the content: Json field on
+    every entity
+
+## Phase 6 — Map Evolution
+
+35. MapLibre GL JS — replace custom SVG viewer with interactive map layer
+36. Map region editor / drawing tools (currently read-only viewer)
+37. Political overlay layer on the map
+38. Narrative overlay layer (story arcs, event locations)
+39. Relational overlay layer (show entity links spatially)
+40. Topographic / elevation-aware view
+41. Procedural map generation pipeline (open-source tools, fed by world data)
+
+## Phase 7 — Visualization & Graph
+
+42. React Flow — relationship graph view for entity links
+43. Event-chain visualization (ordered event sequences per story)
+44. Systems / rules visualization (RuleSystem graph)
+45. Full timeline view across all events
+
+## Phase 8 — Export, Portability & Polish
+
+46. JSON export of all world data
+47. Markdown export (entities + relations as structured Markdown files)
+48. Import from JSON / Markdown
+49. Atmospheric immersive UI theme (cold, fairy-tale, map-dominant)
+50. Design primitives refactor — visual redesign must never force data redesign
+51. Multi-user support and permissions (if needed beyond single-user)

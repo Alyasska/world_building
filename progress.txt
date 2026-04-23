@@ -1,0 +1,126 @@
+# World Engine — Progress Tracker
+
+Last updated: 2026-04-23
+Current position: Phase 4 complete (tasks 23–29 done). Next: Phase 5 — Auth.js (task 30)
+
+---
+
+## Status Legend
+
+[x] Done
+[~] Partial / scaffolded
+[ ] Not started
+
+---
+
+## Phase 1 — Data Foundation
+
+[x] 1.  Core entity tables in Prisma schema
+[x] 2.  Relational tables (EntityLinks, EventParticipants, Tags, EntityTags, etc.)
+[x] 3.  Optional / partial data support (unknown dates, draft states, metadata)
+[x] 4.  status + canonState + deletedAt on every entity
+[x] 5.  Initial PostgreSQL migration (20260423000000_init)
+
+## Phase 2 — Core Entity CRUD
+
+[x] 6.  Character CRUD — UI + service + API
+[x] 7.  Place CRUD — UI + service + API
+[x] 8.  Story CRUD — UI + service + API
+[x] 9.  Event CRUD — UI + service + API
+[x] 10. Tag manager — CRUD + color + namespace + EntityTag attach
+[x] 11. EntityLink manager — bidirectional typed links
+[x] 12. EventParticipant manager — roles + sequence
+[x] 13. Zod validation schemas for all API inputs
+[x] 14. Service layer separated from route handlers
+
+## Phase 3 — Map Foundation & Cross-Cutting Features
+
+[x] 15. Maps list page + static SVG map viewer
+[x] 16. Point / Rect / Polygon geometry (1000×1000 space)
+[x] 17. Clicking region → detail panel → Place record link
+[x] 18. Place chronology (timeline of events at a place)
+[x] 19. Global search (/search)
+[~] 20. World Explorer component (surface scaffolded, graph not implemented)
+[x] 21. Russian-first i18n with English fallback (lib/i18n/ui.ts)
+[x] 22. Soft-delete, status, and canon-state on all entities
+
+## Phase 4 — Remaining Entity CRUD
+
+[x] 23. Faction CRUD
+[x] 24. LoreEntry CRUD
+[x] 25. RuleSystem CRUD
+[x] 26. Asset CRUD
+[x] 27. PlaceConnection UI
+[x] 28. CharacterRelation UI
+[x] 29. StoryEntity manager
+
+## Phase 5 — Infrastructure Integrations
+
+[ ] 30. Auth.js authentication
+[ ] 31. Route protection and session handling
+[ ] 32. next-intl (replace custom getUiText())
+[ ] 33. Meilisearch (replace Prisma contains search)
+[ ] 34. Tiptap rich text editor
+
+## Phase 6 — Map Evolution
+
+[ ] 35. MapLibre GL JS (replace SVG viewer)
+[ ] 36. Map region editor / drawing tools
+[ ] 37. Political overlay
+[ ] 38. Narrative overlay
+[ ] 39. Relational overlay
+[ ] 40. Topographic view
+[ ] 41. Procedural map generation
+
+## Phase 7 — Visualization & Graph
+
+[ ] 42. React Flow — entity relationship graph
+[ ] 43. Event-chain visualization
+[ ] 44. Systems / rules visualization
+[ ] 45. Full timeline view
+
+## Phase 8 — Export, Portability & Polish
+
+[ ] 46. JSON export
+[ ] 47. Markdown export
+[ ] 48. Import from JSON / Markdown
+[ ] 49. Atmospheric immersive UI theme
+[ ] 50. Design primitives refactor
+[ ] 51. Multi-user support and permissions
+
+---
+
+## Next Up
+
+Phase 5 — Task 30 Auth.js authentication, then 31 route protection, 32 next-intl, 33 Meilisearch, 34 Tiptap.
+After entity layer is complete, move to Phase 5 (Auth.js first).
+
+---
+
+## CRUD Pattern (read this before implementing a new entity)
+
+Every entity follows the same 7-file pattern. Use Faction as the reference (simplest case).
+
+**Files per entity (example: Faction → replace with new entity name):**
+- `schemas/faction.ts` — Zod: createSchema + updateSchema + idSchema, extends baseEntityInputSchema
+- `server/faction-service.ts` — list / get / create / update / delete; soft-delete cleans EntityLink + EntityTag
+- `server/slug.ts` — add resolveFactionSlug() using uniqueSlug(prisma.faction, ...)
+- `app/api/factions/route.ts` — GET + POST
+- `app/api/factions/[id]/route.ts` — GET + PATCH + DELETE
+- `features/factions/faction-form.tsx` — "use client" form; reads ui.factions.form.*
+- `app/factions/` — page.tsx, new/page.tsx, [id]/page.tsx, [id]/edit/page.tsx, loading.tsx, error.tsx
+- `lib/i18n/ui.ts` — add nav key + entity block (ru + en); Russian strings must be real Cyrillic, no copy-paste from terminal
+- `components/site-nav.tsx` — add nav link
+
+**Key conventions:**
+- Primary key field: `name` (Character, Place, Faction) or `title` (Story, Event, LoreEntry, RuleSystem)
+- entityType strings used in EntityTag/EntityLink: `'character'`, `'place'`, `'faction'`, `'lore-entry'`, `'story'`, `'event'`
+- TagManager and EntityLinkManager props: extend the `entityType` union in both components when adding a new entity
+- Route params: `context.params` is a Promise in Next.js App Router — always `await context.params`
+- JSON fields: use `toJsonWrite(existing.field)` in updates to avoid NullableJsonNullValueInput type error
+- baseEntityInputSchema already covers: slug, summary, content, status, canonState, metadata
+
+**Relation widgets (not full CRUD pages):** PlaceConnectionManager, CharacterRelationManager, StoryEntityManager, TagManager, EntityLinkManager
+- Pattern: service (list/create/delete) + POST+DELETE API routes + "use client" panel widget wired into detail page
+- Widget receives pre-fetched lists as props; names/hrefs resolved server-side before passing down
+- entityType strings in EntityTag/EntityLink: 'character', 'place', 'faction', 'lore-entry', 'rule-system'

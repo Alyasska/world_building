@@ -54,3 +54,19 @@ export function resolveMapSlug(name: string, providedSlug?: string, excludeId?: 
 export function resolveMapRegionSlug(name: string, providedSlug?: string, excludeId?: string): Promise<string> {
   return uniqueSlug(prisma.mapRegion, providedSlug ?? name, excludeId);
 }
+
+export function resolveFactionSlug(name: string, providedSlug?: string, excludeId?: string): Promise<string> {
+  return uniqueSlug(prisma.faction, providedSlug ?? name, excludeId);
+}
+
+export function resolveLoreEntrySlug(title: string, providedSlug?: string, excludeId?: string): Promise<string> {
+  return uniqueSlug(prisma.loreEntry, providedSlug ?? title, excludeId);
+}
+
+export function resolveRuleSystemSlug(title: string, providedSlug?: string, excludeId?: string): Promise<string> {
+  return uniqueSlug(prisma.ruleSystem, providedSlug ?? title, excludeId);
+}
+
+export function resolveAssetSlug(name: string, providedSlug?: string, excludeId?: string): Promise<string> {
+  return uniqueSlug(prisma.asset, providedSlug ?? name, excludeId);
+}

@@ -24,7 +24,7 @@ type EntityTagRecord = {
 
 type TagManagerProps = {
   entityId: string;
-  entityType: 'character' | 'place';
+  entityType: 'character' | 'place' | 'faction' | 'lore-entry' | 'rule-system';
   assignedTags: EntityTagRecord[];
   availableTags: TagOption[];
   loadError?: string | null;

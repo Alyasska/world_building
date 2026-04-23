@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getCharacter } from '@/server/character-service';
+import { getCharacter, listCharacters } from '@/server/character-service';
 import { listPlaces } from '@/server/place-service';
 import { listEntityTags } from '@/server/entity-tag-service';
 import { listEntityLinks } from '@/server/entity-link-service';
 import { listCharacterEventParticipations } from '@/server/event-participant-service';
 import { listTags } from '@/server/tag-service';
+import { listCharacterRelations } from '@/server/character-relation-service';
+import { CharacterRelationManager } from '@/components/ui/character-relation-manager';
 import { DeleteButton } from '@/components/ui/delete-button';
 import { EntityLinkManager } from '@/components/ui/entity-link-manager';
 import { PageContainer } from '@/components/ui/page-container';
@@ -56,6 +58,10 @@ export default async function CharacterDetailPage({ params }: PageProps) {
   const eventParticipationsResult = await Promise.allSettled([
     listCharacterEventParticipations(id),
   ]);
+  const [charRelationsResult, allCharactersResult] = await Promise.allSettled([
+    listCharacterRelations(id),
+    listCharacters(),
+  ]);
 
   const entityTags = entityTagsResult.status === 'fulfilled' ? entityTagsResult.value : [];
   const availableTags = availableTagsResult.status === 'fulfilled' ? availableTagsResult.value : [];
@@ -93,6 +99,14 @@ export default async function CharacterDetailPage({ params }: PageProps) {
     eventParticipationsResult[0].status === 'fulfilled'
       ? eventParticipationsResult[0].value
       : [];
+  const rawCharRelations = charRelationsResult.status === 'fulfilled' ? charRelationsResult.value : [];
+  const allCharacters = allCharactersResult.status === 'fulfilled' ? allCharactersResult.value : [];
+  const charRelations = rawCharRelations.map((rel) => ({
+    id: rel.id,
+    relationType: rel.relationType,
+    relatedCharacter: rel.fromCharacterId === id ? rel.toCharacter : rel.fromCharacter,
+  }));
+  const charRelationsLoadError = charRelationsResult.status === 'rejected' ? ui.characterRelations.loadFailed : null;
 
   return (
     <PageContainer narrow>
@@ -175,6 +189,13 @@ export default async function CharacterDetailPage({ params }: PageProps) {
           relatedLinks={relatedLinks}
           availableEntities={availablePlaces}
           loadError={linksLoadError}
+        />
+
+        <CharacterRelationManager
+          characterId={character.id}
+          relations={charRelations}
+          availableCharacters={allCharacters}
+          loadError={charRelationsLoadError}
         />
       </div>
     </PageContainer>

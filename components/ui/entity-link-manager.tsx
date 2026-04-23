@@ -26,8 +26,8 @@ type RelatedLink = {
 
 type EntityLinkManagerProps = {
   entityId: string;
-  entityType: 'character' | 'place';
-  targetEntityType: 'character' | 'place';
+  entityType: 'character' | 'place' | 'faction';
+  targetEntityType: 'character' | 'place' | 'faction';
   relatedLinks: RelatedLink[];
   availableEntities: LinkableEntity[];
   loadError?: string | null;

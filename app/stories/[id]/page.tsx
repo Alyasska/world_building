@@ -1,11 +1,16 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getStory } from '@/server/story-service';
+import { listStoryEntities } from '@/server/story-entity-service';
+import { listCharacters } from '@/server/character-service';
+import { listPlaces } from '@/server/place-service';
+import { listFactions } from '@/server/faction-service';
 import { DeleteButton } from '@/components/ui/delete-button';
 import { PageContainer } from '@/components/ui/page-container';
 import { SectionHeader } from '@/components/ui/section-header';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { StoryEntityManager } from '@/components/ui/story-entity-manager';
 import { getUiText } from '@/lib/i18n/ui';
-import { getStory } from '@/server/story-service';
 
 const ui = getUiText();
 
@@ -16,10 +21,31 @@ type PageProps = {
 export default async function StoryDetailPage({ params }: PageProps) {
   const { id } = await params;
   const story = await getStory(id);
+  if (!story) notFound();
 
-  if (!story) {
-    notFound();
-  }
+  const [storyEntitiesResult, charactersResult, placesResult, factionsResult] = await Promise.allSettled([
+    listStoryEntities(id),
+    listCharacters(),
+    listPlaces(),
+    listFactions(),
+  ]);
+
+  const rawEntities = storyEntitiesResult.status === 'fulfilled' ? storyEntitiesResult.value : [];
+  const availableCharacters = charactersResult.status === 'fulfilled' ? charactersResult.value : [];
+  const availablePlaces = placesResult.status === 'fulfilled' ? placesResult.value : [];
+  const availableFactions = factionsResult.status === 'fulfilled' ? factionsResult.value : [];
+  const entitiesLoadError = storyEntitiesResult.status === 'rejected' ? ui.storyEntities.loadFailed : null;
+
+  const entityNameMap: Record<string, { name: string; href: string }> = {};
+  for (const c of availableCharacters) entityNameMap[c.id] = { name: c.name, href: `/characters/${c.id}` };
+  for (const p of availablePlaces) entityNameMap[p.id] = { name: p.name, href: `/places/${p.id}` };
+  for (const f of availableFactions) entityNameMap[f.id] = { name: f.name, href: `/factions/${f.id}` };
+
+  const storyEntities = rawEntities.map((e) => ({
+    ...e,
+    name: entityNameMap[e.entityId]?.name ?? e.entityId,
+    href: entityNameMap[e.entityId]?.href ?? '#',
+  }));
 
   return (
     <PageContainer narrow>
@@ -87,6 +113,15 @@ export default async function StoryDetailPage({ params }: PageProps) {
           <h2>{ui.stories.fields.content}</h2>
           <div className="prose">{story.content ? JSON.stringify(story.content, null, 2) : ui.common.noContentYet}</div>
         </section>
+
+        <StoryEntityManager
+          storyId={story.id}
+          entities={storyEntities}
+          availableCharacters={availableCharacters}
+          availablePlaces={availablePlaces}
+          availableFactions={availableFactions}
+          loadError={entitiesLoadError}
+        />
       </div>
     </PageContainer>
   );

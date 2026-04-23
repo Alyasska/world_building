@@ -1,16 +1,18 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { listCharacters } from '@/server/character-service';
-import { getPlace } from '@/server/place-service';
+import { getPlace, listPlaces } from '@/server/place-service';
 import { listEntityTags } from '@/server/entity-tag-service';
 import { listEntityLinks } from '@/server/entity-link-service';
 import { getPlaceChronology } from '@/server/place-chronology-service';
 import { listStoriesByPlace } from '@/server/story-service';
 import { listTags } from '@/server/tag-service';
+import { listPlaceConnections } from '@/server/place-connection-service';
 import { DeleteButton } from '@/components/ui/delete-button';
 import { EntityLinkManager } from '@/components/ui/entity-link-manager';
 import { PageContainer } from '@/components/ui/page-container';
 import { PlaceChronology } from '@/components/ui/place-chronology';
+import { PlaceConnectionManager } from '@/components/ui/place-connection-manager';
 import { SectionHeader } from '@/components/ui/section-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { TagManager } from '@/components/ui/tag-manager';
@@ -41,6 +43,10 @@ export default async function PlaceDetailPage({ params }: PageProps) {
   const [storiesResult, eventsResult] = await Promise.allSettled([
     listStoriesByPlace(id),
     getPlaceChronology(id),
+  ]);
+  const [connectionsResult, allPlacesResult] = await Promise.allSettled([
+    listPlaceConnections(id),
+    listPlaces(),
   ]);
 
   const entityTags = entityTagsResult.status === 'fulfilled' ? entityTagsResult.value : [];
@@ -77,6 +83,16 @@ export default async function PlaceDetailPage({ params }: PageProps) {
       : null;
   const relatedStories = storiesResult.status === 'fulfilled' ? storiesResult.value : [];
   const chronology = eventsResult.status === 'fulfilled' ? eventsResult.value : [];
+  const rawConnections = connectionsResult.status === 'fulfilled' ? connectionsResult.value : [];
+  const allPlaces = allPlacesResult.status === 'fulfilled' ? allPlacesResult.value : [];
+  const connections = rawConnections.map((conn) => ({
+    id: conn.id,
+    connectionType: conn.connectionType,
+    isBidirectional: conn.isBidirectional,
+    travelTimeText: conn.travelTimeText,
+    relatedPlace: conn.fromPlaceId === id ? conn.toPlace : conn.fromPlace,
+  }));
+  const connectionsLoadError = connectionsResult.status === 'rejected' ? ui.placeConnections.loadFailed : null;
 
   return (
     <PageContainer narrow>
@@ -223,6 +239,13 @@ export default async function PlaceDetailPage({ params }: PageProps) {
           relatedLinks={relatedLinks}
           availableEntities={availableCharacters}
           loadError={linksLoadError}
+        />
+
+        <PlaceConnectionManager
+          placeId={place.id}
+          connections={connections}
+          availablePlaces={allPlaces}
+          loadError={connectionsLoadError}
         />
       </div>
     </PageContainer>

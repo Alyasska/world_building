@@ -13,6 +13,10 @@ const links = [
   { href: '/stories', label: ui.nav.stories },
   { href: '/events', label: ui.nav.events },
   { href: '/characters', label: ui.nav.characters },
+  { href: '/factions', label: ui.nav.factions },
+  { href: '/lore-entries', label: ui.nav.loreEntries },
+  { href: '/rule-systems', label: ui.nav.ruleSystems },
+  { href: '/assets', label: ui.nav.assets },
 ];
 
 export function SiteNav() {
