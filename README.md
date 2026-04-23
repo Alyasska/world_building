@@ -73,6 +73,10 @@ As of 2026-04-23 the app has a working full-stack runtime with CRUD for all prim
 - Every entity has `status`, `canonState`, `deletedAt` — designed for draft states and alternate canon from the start.
 - Phase 4 target: Faction + LoreEntry CRUD, Place connections UI, and map region editor.
 
+## Encoding Convention
+
+All source files are **UTF-8 without BOM**. The app is Russian-first — Cyrillic strings are throughout `lib/i18n/ui.ts`. Mojibake (encoding corruption) looks like repeating `Р`/`С` sequences, e.g. `'РСЃС‚РѕСЂРёРё'` instead of `'Истории'`. This happens when UTF-8 Cyrillic bytes (`D0 xx`, `D1 xx`) are re-read as Windows-1251 characters. Never paste text from a Windows terminal into source files. See `CLAUDE.md` for detection and prevention rules.
+
 ## Project Layout
 
 ```
